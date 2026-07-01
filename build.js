@@ -23,11 +23,20 @@ const outerAreas = load("outer-areas.json");
 const useCases = load("use-cases.json");
 const checks = load("checks.json");
 const policies = load("policies.json");
+const adminDongs = load("admin-dongs.json");
 
 const cityBy = Object.fromEntries(cities.map((c) => [c.slug, c]));
 const lifeBy = Object.fromEntries(lifeAreas.map((l) => [l.slug, l]));
 const stationBy = Object.fromEntries(stations.map((s) => [s.slug, s]));
 const regionBy = Object.fromEntries(regions.map((r) => [r.slug, r]));
+
+const dongsByCity = {};
+const dongsByDistrict = {};
+adminDongs.forEach((d) => {
+  (dongsByCity[d.city] = dongsByCity[d.city] || []).push(d);
+  if (d.district) (dongsByDistrict[d.district] = dongsByDistrict[d.district] || []).push(d);
+});
+const dongUrl = (d) => (d.district ? `${BASE}${d.city}/${d.district}/${d.slug}/` : `${BASE}${d.city}/${d.slug}/`);
 
 const LAST_MOD = "2026-07-01"; // build.js는 Date.now() 미사용 — 배포 시 갱신
 
@@ -462,7 +471,17 @@ function cityContent(c) {
   if (c.districts.length) {
     p.push(
       `<h2>대표 행정구</h2><p>${c.name}은 ${c.districts.length}개 일반구 구조로, 각 구의 생활권 성격이 다릅니다.</p>` +
-        `<ul>${c.districts.map((d) => `<li><a href="${BASE}${c.slug}/${d.slug}/"><strong>${d.name}</strong></a> — ${esc(d.note)}</li>`).join("")}</ul>`
+        `<ul>${c.districts
+          .map((d) => {
+            const dd = (dongsByDistrict[d.slug] || []).map((x) => `<a href="${dongUrl(x)}">${x.name}</a>`).join(", ");
+            return `<li><a href="${BASE}${c.slug}/${d.slug}/"><strong>${d.name}</strong></a> — ${esc(d.note)}${dd ? `<br><span class="small muted">대표 행정동: ${dd}</span>` : ""}</li>`;
+          })
+          .join("")}</ul>`
+    );
+  } else if (dongsByCity[c.slug]) {
+    p.push(
+      `<h2>대표 행정동·읍면동</h2><p>${c.name}의 대표 행정동·읍면동을 생활권·이동 기준으로 나눠 안내합니다.</p>` +
+        linkChips(dongsByCity[c.slug].map((d) => [dongUrl(d), d.name]))
     );
   } else {
     p.push(`<h2>대표 지역</h2><p>${c.name}의 대표 행정동·읍면동으로는 ${nameList(c.neighborhoods)} 등이 있으며, 생활권 기준으로 이동 기준을 나눠 확인합니다.</p>`);
@@ -563,6 +582,7 @@ function buildCities() {
 <section class="container"><div class="hero"><h1>${c.name} ${d.name} 출장마사지 · 생활권 안내</h1><p class="lede">${esc(d.note)}</p></div></section>
 <section class="section"><div class="container"><article class="article">
   <h2>${d.name} 개요</h2><p>${esc(d.note)} ${c.name}의 다른 구·생활권과 이동 기준이 다르므로 방문 주소가 ${d.name}에 속하는지 먼저 확인하세요.</p>
+  ${(dongsByDistrict[d.slug] || []).length ? `<h2>대표 행정동</h2>${linkChips((dongsByDistrict[d.slug] || []).map((x) => [dongUrl(x), x.name]))}` : ""}
   <h2>대표 생활권</h2>${linkChips(relLife.map((s) => [`${BASE}life/${s}/`, lifeBy[s].name]))}
   <h2>이용 장소별 기준</h2>${linkChips([[`${BASE}use/home/`, "자택 이용"], [`${BASE}use/officetel/`, "오피스텔 이용"], [`${BASE}use/station-area/`, "역세권 이용"]])}
   <h2>예약 전 체크리스트</h2>${checklistBlock(["방문 주소와 동·호수 확인", "공동현관 출입 방식 확인", "가까운 생활권·역 확인", "이용 장소 기준 확인"])}
@@ -579,6 +599,101 @@ function buildCities() {
         body: dbody,
         priority: 0.6,
       });
+    });
+  });
+}
+
+// ---- 3b) ADMIN DONGS (행정동·읍면동) --------------------------------
+function buildAdminDongs() {
+  adminDongs.forEach((d) => {
+    const c = cityBy[d.city];
+    const district = d.district ? c.districts.find((x) => x.slug === d.district) : null;
+    const life = d.life ? lifeBy[d.life] : null;
+    const st = (d.stations || []).filter((s) => stationBy[s]);
+    const urlPath = dongUrl(d);
+    const typeLabel = { newtown: "신도시형", "station-area": "역세권형", residential: "주거형", business: "상업·업무형", outer: "외곽 이동형" }[d.type] || "생활권";
+    const crumb = [
+      { name: "홈", url: BASE },
+      { name: "시군 안내", url: `${BASE}goyang/` },
+      { name: c.name, url: `${BASE}${c.slug}/` },
+      ...(district ? [{ name: district.name, url: `${BASE}${c.slug}/${district.slug}/` }] : []),
+      { name: d.name, url: urlPath },
+    ];
+    const siblings = (dongsByCity[d.city] || []).filter((x) => x.slug !== d.slug).slice(0, 6);
+    const useLink =
+      d.type === "outer"
+        ? [`${BASE}use/pension-lodging/`, "펜션·숙소권 이용"]
+        : d.type === "newtown"
+        ? [`${BASE}use/newtown/`, "신도시 생활권 이용"]
+        : d.type === "station-area" || d.type === "business"
+        ? [`${BASE}use/station-area/`, "역세권 이용"]
+        : [`${BASE}use/home/`, "자택 이용"];
+
+    const parts = [];
+    parts.push(`<h2>${d.name} 지역 개요</h2><p>${esc(d.summary)} 상위 시군은 <a href="${BASE}${c.slug}/">${c.name}</a>${district ? `, 상위 행정구는 <a href="${BASE}${c.slug}/${district.slug}/">${district.name}</a>` : ""}이며, ${typeLabel} 생활권으로 분류합니다. 같은 ${c.name} 안에서도 ${d.name}은 이동 기준이 다를 수 있어 방문 주소가 ${d.name}에 속하는지 먼저 확인하는 것이 정확합니다.</p>`);
+    if (life) {
+      parts.push(`<h2>포함 생활권</h2><p>${d.name}은 <a href="${BASE}life/${life.slug}/">${life.name}</a> 생활권에 포함됩니다. ${esc(life.summary)}</p>`);
+    }
+    if (st.length) {
+      parts.push(
+        `<h2>가까운 지하철역</h2><p>${d.name}에서 가까운 역은 ${nameList(st.map((s) => stationBy[s].name))}입니다. 출구별로 나누지 않고 역명 기준으로 안내하므로, 실제 방문 주소와 가장 가까운 역을 함께 확인하세요.</p>` +
+          linkChips(st.map((s) => [`${BASE}station/${s}/`, stationBy[s].name]))
+      );
+    } else {
+      parts.push(`<h2>이동 기준</h2><p>${d.name}은 ${c.isOuter || d.type === "outer" ? "지하철역보다 차량 이동과 사전 예약 확인이 중요합니다. 방문 주소, 차량 진입 가능 여부, 예약 가능 시간, 추가 이동비를 먼저 확인해야 합니다." : "가까운 지하철역과 버스 이동을 함께 확인하고, 정확한 방문 주소를 기준으로 안내합니다."}</p>`);
+    }
+    parts.push(
+      `<h2>이용 장소별 기준</h2><p>${d.name}에서는 이용 장소에 따라 확인 사항이 달라집니다. 자택은 정확한 주소와 공동현관 출입 방식을, 오피스텔은 공동현관·엘리베이터·관리 규정을, ${d.type === "outer" ? "펜션·숙소는 위치와 차량 진입 방식을" : "호텔·숙소는 외부인 방문 정책과 객실 출입 가능 여부를"} 먼저 확인하세요.</p>` +
+        linkChips([useLink, [`${BASE}use/officetel/`, "오피스텔 이용"], [`${BASE}use/home/`, "자택 이용"]])
+    );
+    parts.push(
+      `<h2>예약 전 체크리스트</h2>` +
+        checklistBlock([
+          `방문 주소가 ${d.name}이 맞는지 확인했나요?`,
+          "동·호수와 공동현관 출입 방식을 확인했나요?",
+          st.length ? "가까운 지하철역을 확인했나요?" : "차량 이동 가능 여부를 확인했나요?",
+          d.type === "outer" ? "추가 이동비와 예약 가능 시간을 확인했나요?" : "예약 가능 시간을 확인했나요?",
+        ]) +
+        linkChips(checks.slice(0, 3).map((x) => [`${BASE}check/${x.slug}/`, x.name]))
+    );
+    parts.push(policyNotice);
+    parts.push(
+      faqBlock([
+        [`${d.name}도 방문 가능한가요?`, `실제 방문 주소, 가까운 ${st.length ? "지하철역" : "이동 기준"}, 예약 가능 시간을 확인한 뒤 안내합니다.`],
+        ["불법·선정적 서비스도 가능한가요?", "불법·선정적 서비스는 제공하거나 안내하지 않습니다."],
+      ])
+    );
+    parts.push(
+      eeat(
+        `${c.name} ${d.name} 지역 안내 콘텐츠 담당자가 작성하고 운영 책임자가 검수합니다.`,
+        `${d.name}의 상위 시군·행정구, 포함 생활권, 가까운 역 또는 차량 이동 기준, 이용 장소별 예약 전 확인사항을 기준으로 구성했습니다.`,
+        `${d.name} 방문 사용자가 자신의 지역과 이용 장소를 안전하게 확인할 수 있도록 돕기 위해 작성했습니다.`
+      )
+    );
+    parts.push(
+      `<h2>관련 지역 보기</h2>` +
+        linkChips([
+          [`${BASE}${c.slug}/`, `${c.name} 전체`],
+          ...(district ? [[`${BASE}${c.slug}/${district.slug}/`, `${district.name}`]] : []),
+          ...(life ? [[`${BASE}life/${life.slug}/`, `${life.name} 생활권`]] : []),
+          ...siblings.map((x) => [dongUrl(x), x.name]),
+        ])
+    );
+
+    const body = `
+<section class="container"><div class="hero"><h1>${c.name} ${d.name} 출장마사지 · 생활권 안내</h1><p class="lede">${esc(d.summary)} 상호 간다GO · 전화예약 ${site.phone}.</p></div></section>
+<section class="section"><div class="container"><article class="article">
+  ${parts.join("\n  ")}
+</article></div></section>`;
+    page({
+      urlPath,
+      title: `${c.name} ${d.name} 출장마사지 | 간다GO`,
+      description: `간다GO ${c.name} ${d.name} 출장마사지. ${d.summary}`,
+      current: "goyang/",
+      breadcrumb: crumb,
+      image: { url: site.ogImage, alt: `${c.name} ${d.name} 방문형 관리 안내 이미지` },
+      body,
+      priority: 0.5,
     });
   });
 }
@@ -834,6 +949,7 @@ function run() {
   buildMain();
   buildRegions();
   buildCities();
+  buildAdminDongs();
   buildLifeAreas();
   buildStations();
   buildOuter();

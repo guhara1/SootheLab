@@ -22,6 +22,7 @@ data/gyeonggi-north/   # 콘텐츠 데이터 (JSON)
   life-areas.json      # 18개 생활권
   stations.json        # 38개 지하철역 (역명 기준 1 URL, 출구·노선별 분리 금지)
   outer-areas.json     # 5개 외곽 이동권
+  admin-dongs.json     # 77개 대표 행정동·읍면동 (고양은 구 하위 중첩)
   use-cases.json       # 8개 이용 장소
   checks.json          # 8개 예약 전 확인
   policies.json        # 운영 기준·문의하기
