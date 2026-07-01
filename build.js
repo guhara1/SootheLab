@@ -612,6 +612,8 @@ function buildAdminDongs() {
     const st = (d.stations || []).filter((s) => stationBy[s]);
     const urlPath = dongUrl(d);
     const typeLabel = { newtown: "신도시형", "station-area": "역세권형", residential: "주거형", business: "상업·업무형", outer: "외곽 이동형" }[d.type] || "생활권";
+    const covers = d.covers || d.summary || d.name;
+    const summary = d.summary || `${d.name}은 ${covers} 중심의 ${typeLabel} 행정동입니다.`;
     const crumb = [
       { name: "홈", url: BASE },
       { name: "시군 안내", url: `${BASE}goyang/` },
@@ -630,7 +632,7 @@ function buildAdminDongs() {
         : [`${BASE}use/home/`, "자택 이용"];
 
     const parts = [];
-    parts.push(`<h2>${d.name} 지역 개요</h2><p>${esc(d.summary)} 상위 시군은 <a href="${BASE}${c.slug}/">${c.name}</a>${district ? `, 상위 행정구는 <a href="${BASE}${c.slug}/${district.slug}/">${district.name}</a>` : ""}이며, ${typeLabel} 생활권으로 분류합니다. 같은 ${c.name} 안에서도 ${d.name}은 이동 기준이 다를 수 있어 방문 주소가 ${d.name}에 속하는지 먼저 확인하는 것이 정확합니다.</p>`);
+    parts.push(`<h2>${d.name} 지역 개요</h2><p>${esc(summary)} 상위 시군은 <a href="${BASE}${c.slug}/">${c.name}</a>${district ? `, 상위 행정구는 <a href="${BASE}${c.slug}/${district.slug}/">${district.name}</a>` : ""}이며, ${typeLabel} 생활권으로 분류합니다. 같은 ${c.name} 안에서도 ${d.name}은 이동 기준이 다를 수 있어 방문 주소가 ${d.name}에 속하는지 먼저 확인하는 것이 정확합니다.</p>`);
     if (life) {
       parts.push(`<h2>포함 생활권</h2><p>${d.name}은 <a href="${BASE}life/${life.slug}/">${life.name}</a> 생활권에 포함됩니다. ${esc(life.summary)}</p>`);
     }
@@ -681,14 +683,14 @@ function buildAdminDongs() {
     );
 
     const body = `
-<section class="container"><div class="hero"><h1>${c.name} ${d.name} 출장마사지 · 생활권 안내</h1><p class="lede">${esc(d.summary)} 상호 간다GO · 전화예약 ${site.phone}.</p></div></section>
+<section class="container"><div class="hero"><h1>${c.name} ${d.name} 출장마사지 · 생활권 안내</h1><p class="lede">${esc(summary)} 상호 간다GO · 전화예약 ${site.phone}.</p></div></section>
 <section class="section"><div class="container"><article class="article">
   ${parts.join("\n  ")}
 </article></div></section>`;
     page({
       urlPath,
       title: `${c.name} ${d.name} 출장마사지 | 간다GO`,
-      description: `간다GO ${c.name} ${d.name} 출장마사지. ${d.summary}`,
+      description: `간다GO ${c.name} ${d.name} 출장마사지. ${covers} 예약 전 확인 안내.`,
       current: "goyang/",
       breadcrumb: crumb,
       image: { url: site.ogImage, alt: `${c.name} ${d.name} 방문형 관리 안내 이미지` },

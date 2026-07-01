@@ -22,7 +22,7 @@ data/gyeonggi-north/   # 콘텐츠 데이터 (JSON)
   life-areas.json      # 18개 생활권
   stations.json        # 38개 지하철역 (역명 기준 1 URL, 출구·노선별 분리 금지)
   outer-areas.json     # 5개 외곽 이동권
-  admin-dongs.json     # 77개 대표 행정동·읍면동 (고양은 구 하위 중첩)
+  admin-dongs.json     # 102개 행정동 전체 (읍·면 제외, 고양은 구 하위 중첩)
   use-cases.json       # 8개 이용 장소
   checks.json          # 8개 예약 전 확인
   policies.json        # 운영 기준·문의하기
@@ -55,6 +55,10 @@ dist/                  # 생성 결과 (gitignore)
 ## 남은 작업(2차)
 
 - 실제 텔레그램 주소로 `site.json` 교체.
+- 행정동 목록·관할 구역 검증: 위키백과/나무위키/시청 사이트가 현재 환경의 egress
+  정책으로 차단되어 검색 요약 기반으로 구성함. 번호동(운정1~6동 등) 관할 구역은
+  정확한 법정동 단정 대신 지역 성격 중심으로 서술. 공식 행정복지센터 목록과
+  대조해 `admin-dongs.json`의 `covers`·행정동 구성 확정 필요.
 - 세부 행정동·읍면동 데이터 추가 등록 후 검색 수요 확인 시 순차 색인.
 - 대표 이미지(실사) 교체 — 현재는 자동 생성 SVG(og/logo) 사용.
 - 도메인(`baseUrl`) 확정 후 canonical/sitemap 재빌드.
