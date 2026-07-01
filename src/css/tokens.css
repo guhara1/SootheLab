@@ -1,0 +1,121 @@
+/* =====================================================================
+   간다GO · Design Tokens — Premium Palette
+   Pretendard 기반. 기존 토큰 시스템을 프리미엄 팔레트로 교체.
+   ===================================================================== */
+
+/* Pretendard (variable) */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
+:root {
+  /* ---- Core neutrals: deep charcoal → warm off-white -------------- */
+  --c-ink-900: #14110f;
+  --c-ink-800: #201b18;
+  --c-ink-700: #2f2823;
+  --c-ink-600: #4a3f37;
+  --c-ink-500: #6b5d52;
+  --c-ink-400: #938578;
+  --c-ink-300: #c2b6aa;
+  --c-ink-200: #e4dcd2;
+  --c-ink-100: #f2ece4;
+  --c-ink-050: #faf6f0;
+  --c-paper:   #fffdf9;
+
+  /* ---- Premium accent: warm amber / signature orange ------------- */
+  --c-orange-700: #b34700;
+  --c-orange-600: #d1560a;
+  --c-orange-500: #f26b1d;   /* signature CTA orange */
+  --c-orange-400: #ff8a3d;
+  --c-orange-300: #ffb37a;
+  --c-orange-100: #ffe6d1;
+  --c-orange-050: #fff3e9;
+
+  /* ---- Premium secondary: muted deep teal (신뢰/안정) ------------- */
+  --c-teal-700: #0f4d47;
+  --c-teal-600: #16665e;
+  --c-teal-500: #1f8378;
+  --c-teal-100: #d7ede9;
+
+  /* ---- Premium tertiary: soft gold (고급감 강조선) ---------------- */
+  --c-gold-500: #c9a24b;
+  --c-gold-300: #e6cf94;
+
+  /* ---- Feedback ------------------------------------------------- */
+  --c-danger: #c0392b;
+  --c-ok:     #1f8378;
+
+  /* ---- Semantic aliases ----------------------------------------- */
+  --bg:            var(--c-paper);
+  --bg-subtle:     var(--c-ink-050);
+  --bg-elevated:   #ffffff;
+  --surface-ink:   var(--c-ink-900);
+  --text:          var(--c-ink-800);
+  --text-muted:    var(--c-ink-500);
+  --text-faint:    var(--c-ink-400);
+  --text-invert:   var(--c-ink-050);
+  --border:        var(--c-ink-200);
+  --border-strong: var(--c-ink-300);
+  --accent:        var(--c-orange-500);
+  --accent-hover:  var(--c-orange-600);
+  --accent-press:  var(--c-orange-700);
+  --link:          var(--c-orange-700);
+  --link-hover:    var(--c-orange-600);
+
+  /* ---- Typography ---------------------------------------------- */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9rem;
+  --fs-base: 1rem;
+  --fs-md: 1.075rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.6rem;
+  --fs-2xl: 2.05rem;
+  --fs-3xl: 2.7rem;
+  --lh-tight: 1.25;
+  --lh-normal: 1.7;
+
+  /* ---- Radius / space / shadow --------------------------------- */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
+  --container: 1120px;
+
+  --shadow-sm: 0 1px 2px rgba(32, 27, 24, 0.06), 0 1px 3px rgba(32, 27, 24, 0.08);
+  --shadow-md: 0 6px 18px rgba(32, 27, 24, 0.09), 0 2px 6px rgba(32, 27, 24, 0.06);
+  --shadow-lg: 0 18px 44px rgba(32, 27, 24, 0.14), 0 6px 14px rgba(32, 27, 24, 0.08);
+  --shadow-accent: 0 8px 22px rgba(242, 107, 29, 0.32);
+
+  /* ---- Component overlays (프리미엄 오버레이) ------------------- */
+  --overlay-hero:
+    radial-gradient(1200px 520px at 78% -8%, rgba(242, 107, 29, 0.16), transparent 60%),
+    radial-gradient(900px 480px at 8% 108%, rgba(31, 131, 120, 0.12), transparent 62%),
+    linear-gradient(168deg, var(--c-ink-900), var(--c-ink-700) 62%, var(--c-ink-800));
+  --overlay-card-sheen:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 42%);
+  --overlay-glass:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.86), rgba(255, 253, 249, 0.72));
+  --overlay-gold-rule:
+    linear-gradient(90deg, transparent, var(--c-gold-500) 22%, var(--c-gold-300) 50%, var(--c-gold-500) 78%, transparent);
+  --overlay-section-fade:
+    linear-gradient(180deg, var(--bg), var(--bg-subtle));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #17130f;
+    --bg-subtle:   #1e1813;
+    --bg-elevated: #241d17;
+    --text:        #f1e9df;
+    --text-muted:  #b6a696;
+    --text-faint:  #8c7c6d;
+    --border:      #3a2f26;
+    --border-strong: #4a3d31;
+    --link:        var(--c-orange-300);
+    --link-hover:  var(--c-orange-400);
+    --overlay-glass: linear-gradient(180deg, rgba(36, 29, 23, 0.86), rgba(36, 29, 23, 0.7));
+  }
+}

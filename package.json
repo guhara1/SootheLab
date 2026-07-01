@@ -1,0 +1,11 @@
+{
+  "name": "gandago-gyeonggi-north",
+  "version": "1.0.0",
+  "description": "간다GO 경기북부 출장마사지 지역 안내 사이트 (정적 생성기)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "serve": "node build.js && node -e \"import('node:http').then(({default:h})=>import('node:fs').then(({default:fs})=>h.createServer((q,s)=>{let p='dist'+(q.url==='/'?'/gyeonggi-north/':q.url);if(p.endsWith('/'))p+='index.html';try{const b=fs.readFileSync(p);s.writeHead(200);s.end(b)}catch(e){s.writeHead(404);s.end('404')}}).listen(4173,()=>console.log('http://localhost:4173/'))))\""
+  }
+}

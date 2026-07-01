@@ -1,0 +1,7 @@
+[
+  { "slug": "pocheon-songu", "name": "포천·송우", "city": "pocheon", "summary": "포천동·송우 중심 생활권과 일동·이동·영북 외곽 이동 기준을 안내합니다.", "dongs": ["포천동", "송우", "소흘읍", "일동면", "이동면", "영북면"] },
+  { "slug": "gapyeong-cheongpyeong", "name": "가평·청평", "city": "gapyeong", "summary": "가평읍·청평 숙소권과 설악·북면 차량 이동 기준을 안내합니다.", "dongs": ["가평읍", "청평면", "설악면", "북면", "조종면"] },
+  { "slug": "yeoncheon-jeongok", "name": "연천·전곡", "city": "yeoncheon", "summary": "전곡·연천읍 인근과 군남·백학·신서·미산 외곽 이동 기준을 안내합니다.", "dongs": ["전곡읍", "연천읍", "군남면", "백학면", "신서면", "미산면"] },
+  { "slug": "yangju-outer", "name": "양주 외곽", "city": "yangju", "summary": "광적·장흥 등 양주 외곽 생활권의 차량 이동 기준을 안내합니다.", "dongs": ["광적면", "장흥면", "백석읍"] },
+  { "slug": "paju-north", "name": "파주 북부", "city": "paju", "summary": "문산 이북 파주 북부 지역의 차량 이동·예약 가능 시간 기준을 안내합니다.", "dongs": ["문산읍", "파평면", "적성면", "법원읍"] }
+]

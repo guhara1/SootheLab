@@ -1,0 +1,32 @@
+{
+  "brand": "간다GO",
+  "brandLatin": "GandaGO",
+  "tagline": "경기북부 방문형 관리 지역 안내",
+  "phone": "0508-202-4719",
+  "phoneHref": "tel:05082024719",
+  "baseUrl": "https://gandago.co.kr",
+  "basePath": "/gyeonggi-north/",
+  "defaultDescription": "간다GO 경기북부 출장마사지·홈타이. 10개 시군 생활권·역세권·예약 전 확인을 안내합니다.",
+  "telegram": {
+    "reserve": "https://t.me/gandago_book",
+    "website": "https://t.me/gandago_web",
+    "partner": "https://t.me/gandago_ad"
+  },
+  "author": {
+    "name": "경기북부 지역 안내 콘텐츠 담당자",
+    "url": "/gyeonggi-north/policy/author/"
+  },
+  "reviewer": {
+    "name": "운영 책임자 · 콘텐츠 품질 검수 담당자"
+  },
+  "ogImage": "/gyeonggi-north/assets/og-default.svg",
+  "organization": {
+    "name": "간다GO",
+    "legalName": "간다GO",
+    "url": "https://gandago.co.kr/gyeonggi-north/",
+    "logo": "/gyeonggi-north/assets/logo.svg",
+    "areaServed": "경기북부 (고양·남양주·파주·의정부·양주·구리·포천·동두천·가평·연천)",
+    "contactType": "reservations",
+    "telephone": "0508-202-4719"
+  }
+}
