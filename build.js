@@ -5,6 +5,7 @@
 // =====================================================================
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -19,6 +20,27 @@ const BASE_SEGS = BASE.split("/").filter(Boolean); // 파일 경로용 세그먼
 const ASSETS = BASE + "assets/";
 const OG_IMAGE = ASSETS + "og-default.svg";
 const LOGO = ASSETS + "logo.svg";
+
+// CSS 캐시 버스팅: 소스 CSS 내용 해시 → styles.css?v=해시 (스타일 변경 시 강제 갱신)
+const CSS_VER = crypto
+  .createHash("md5")
+  .update(
+    fs.readFileSync(path.join(__dirname, "src", "css", "styles.css")) +
+      fs.readFileSync(path.join(__dirname, "src", "css", "tokens.css"))
+  )
+  .digest("hex")
+  .slice(0, 8);
+
+// 모바일 고정 전화 버튼 필수 스타일(인라인) — 외부 CSS 캐시와 무관하게 항상 적용되도록 <head>에 삽입
+const fabStyleInline = `<style>
+.fab-call{position:fixed;right:16px;bottom:16px;z-index:1500;width:60px;height:60px;border-radius:50%;display:none;place-items:center;background:linear-gradient(150deg,#f26b1d,#d1560a);color:#fff!important;box-shadow:0 8px 22px rgba(242,107,29,.45),0 4px 12px rgba(0,0,0,.2);animation:fabBounce 2.4s ease-in-out infinite}
+.fab-call svg{width:28px;height:28px;fill:#fff}
+.fab-call::before{content:"";position:absolute;inset:0;border-radius:50%;animation:fabRing 2.4s ease-out infinite}
+@keyframes fabRing{0%{box-shadow:0 0 0 0 rgba(242,107,29,.55)}70%{box-shadow:0 0 0 20px rgba(242,107,29,0)}100%{box-shadow:0 0 0 0 rgba(242,107,29,0)}}
+@keyframes fabBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media(max-width:768px){.fab-call{display:grid}}
+@media(prefers-reduced-motion:reduce){.fab-call{animation:none}.fab-call::before{animation:none}}
+</style>`;
 const cities = load("cities.json");
 const regions = load("regions.json");
 const lifeAreas = load("life-areas.json");
@@ -299,7 +321,8 @@ ${noindex ? '<meta name="robots" content="noindex,follow">\n' : ""}<link rel="ca
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="icon" href="${ASSETS}logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="${ASSETS}styles.css">
+<link rel="stylesheet" href="${ASSETS}styles.css?v=${CSS_VER}">
+${fabStyleInline}
 <script type="application/ld+json">${schemaGraph({ urlPath, title, description: desc, breadcrumb, faq, image })}</script>
 </head>
 <body>
