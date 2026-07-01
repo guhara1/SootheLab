@@ -328,6 +328,26 @@ p  { margin: 0 0 var(--sp-4); }
 .step-card h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-md); }
 .step-card p { margin: 0; color: var(--text-muted); font-size: var(--fs-sm); }
 
+/* ---- Reviews -------------------------------------------------- */
+.stars { color: var(--c-gold-500); letter-spacing: 2px; font-size: 1.05rem; }
+.review-agg { color: var(--text-muted); font-size: var(--fs-md); margin-top: var(--sp-2); }
+.review-agg .stars { font-size: 1.25rem; vertical-align: -1px; }
+.review-agg strong { color: var(--c-gold-700); font-size: 1.35rem; font-family: var(--font-serif); }
+.review-grid { margin-top: var(--sp-6); }
+.review-card {
+  position: relative; background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-6) var(--sp-5); box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+}
+.review-card::before {
+  content: "\201C"; position: absolute; top: 6px; right: 18px;
+  font-family: var(--font-serif); font-size: 3.4rem; line-height: 1; color: var(--c-gold-100);
+}
+.review-card .review-title { margin: var(--sp-1) 0 0; font-size: var(--fs-md); }
+.review-text { color: var(--text); font-size: var(--fs-sm); line-height: 1.75; margin: 0; flex: 1; }
+.review-meta { color: var(--text-faint); font-size: var(--fs-xs); margin-top: var(--sp-2); }
+.review-meta .review-author { color: var(--c-emerald-600); font-weight: 700; }
+
 /* ---- Pricing table -------------------------------------------- */
 .price-sec { background: var(--overlay-hero); color: var(--text-invert); border: none; }
 .price-sec::before { content: ""; display: block; }

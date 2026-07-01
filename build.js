@@ -58,6 +58,12 @@ const reviews = (() => {
   }
 })();
 const hasReviews = Array.isArray(reviews.items) && reviews.items.length > 0;
+const emitReviewSchema = hasReviews && reviews.emitSchema !== false;
+const reviewAvg = hasReviews
+  ? (reviews.ratingValue != null
+      ? Number(reviews.ratingValue)
+      : reviews.items.reduce((a, r) => a + Number(r.rating), 0) / reviews.items.length)
+  : 0;
 
 const cityBy = Object.fromEntries(cities.map((c) => [c.slug, c]));
 const lifeBy = Object.fromEntries(lifeAreas.map((l) => [l.slug, l]));
@@ -144,6 +150,34 @@ const HERO_IMAGE_URL = resolveHeroImage();
 const heroImageBand = HERO_IMAGE_URL
   ? `<figure class="hero-image"><img src="${HERO_IMAGE_URL}" alt="${esc(site.heroImageAlt || "경기북부 출장마사지 지역 안내 이미지")}" loading="lazy" decoding="async"></figure>`
   : "";
+
+// 별점 렌더 (접근성 라벨 포함)
+function starRow(n) {
+  const f = Math.round(n);
+  return `<span class="stars" role="img" aria-label="5점 만점에 ${n}점">${"★".repeat(f)}${"☆".repeat(5 - f)}</span>`;
+}
+
+// 이용 후기 섹션 (메인 + 모든 지역 페이지 공통) — reviews.json 기반
+function reviewsBlock() {
+  if (!hasReviews) return "";
+  const cards = reviews.items
+    .map(
+      (r) => `<article class="review-card">
+        ${starRow(r.rating)}
+        ${r.title ? `<h3 class="review-title">${esc(r.title)}</h3>` : ""}
+        <p class="review-text">${esc(r.text)}</p>
+        <div class="review-meta"><span class="review-author">${esc(r.author || "고객")}</span> · <span>간다GO 이용 고객</span></div>
+      </article>`
+    )
+    .join("\n      ");
+  return `<section class="section alt reviews-sec"><div class="container">
+    <div class="section-head center-head"><span class="eyebrow">REVIEWS</span><h2>간다GO 이용 후기</h2>
+      <p class="review-agg">${starRow(reviewAvg)} <strong>${reviewAvg.toFixed(1)}</strong> / 5.0 · 실이용 후기 ${reviews.items.length}건</p></div>
+    <div class="grid cols-3 review-grid">
+      ${cards}
+    </div>
+  </div></section>`;
+}
 
 // 마사지 요금표 (메인 + 모든 지역 페이지 공통)
 function priceTable(regionName) {
@@ -284,12 +318,10 @@ function organizationNode() {
 
 // 실제 후기가 있을 때만 AggregateRating 생성 (허위 평점 금지)
 function aggregateRatingNode() {
-  if (!hasReviews) return null;
-  const vals = reviews.items.map((r) => Number(r.rating)).filter((n) => !isNaN(n));
-  const rv = reviews.ratingValue != null ? reviews.ratingValue : (vals.reduce((a, b) => a + b, 0) / (vals.length || 1)).toFixed(1);
+  if (!emitReviewSchema) return null;
   return {
     "@type": "AggregateRating",
-    ratingValue: String(rv),
+    ratingValue: reviewAvg.toFixed(1),
     reviewCount: reviews.reviewCount || reviews.items.length,
     bestRating: reviews.bestRating || 5,
     worstRating: reviews.worstRating || 1,
@@ -327,10 +359,11 @@ function serviceNode(urlPath) {
 }
 
 function reviewNodes(urlPath) {
-  if (!hasReviews) return [];
+  if (!emitReviewSchema) return [];
   return reviews.items.map((r, i) => ({
     "@type": "Review",
     "@id": abs(urlPath) + "#review" + (i + 1),
+    name: r.title || undefined,
     itemReviewed: { "@id": abs(urlPath) + "#service" },
     author: { "@type": "Person", name: r.author || "고객" },
     reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: 5, worstRating: 1 },
@@ -395,7 +428,7 @@ function breadcrumbUI(items) {
 }
 
 // ---- page shell -----------------------------------------------------
-function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true, heroImage = true }) {
+function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true, heroImage = true, showReviews = true }) {
   const desc = clampDesc(description);
   const canonical = abs(urlPath);
   const ogImg = abs(image ? image.url : OG_IMAGE);
@@ -434,6 +467,7 @@ ${header(current)}
 <div class="container">${crumbUI}</div>
 <main id="main">
 ${bodyHtml}
+${showReviews ? reviewsBlock() : ""}
 ${price ? priceTable() : ""}
 </main>
 ${footer()}
@@ -1202,6 +1236,7 @@ function buildMeta() {
     noindex: true,
     price: false,
     heroImage: false,
+    showReviews: false,
   });
   fs.copyFileSync(path.join(OUT, ...BASE_SEGS, "404", "index.html"), path.join(OUT, "404.html"));
   // 하위 경로 배포일 때만 루트(/) → BASE 리다이렉트. 루트 배포면 메인이 이미 /index.html.
