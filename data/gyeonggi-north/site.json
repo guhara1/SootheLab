@@ -4,9 +4,11 @@
   "tagline": "경기북부 방문형 관리 지역 안내",
   "phone": "0508-202-4719",
   "phoneHref": "tel:05082024719",
-  "baseUrl": "https://gandago.co.kr",
+  "baseUrl": "https://soothelab.netlify.app",
   "basePath": "/",
   "defaultDescription": "간다GO 경기북부 출장마사지·홈타이. 10개 시군 생활권·역세권·예약 전 확인을 안내합니다.",
+  "naverSiteVerification": "f39459dcb4c38566e29ef88133562a11f8822d47",
+  "googleSiteVerification": "",
   "telegram": {
     "reserve": "https://t.me/gandago_book",
     "website": "https://t.me/gandago_web",

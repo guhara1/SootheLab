@@ -1,0 +1,8 @@
+{
+  "_note": "실제 고객 후기만 입력하세요. 허위 후기·평점은 Google 스팸 정책과 본 사이트 지시서(가짜 후기·허위 평점 금지) 위반이며 색인 불이익·수동 조치 대상입니다. items가 비어 있으면 Review/AggregateRating 스키마는 출력되지 않습니다.",
+  "ratingValue": null,
+  "reviewCount": 0,
+  "bestRating": 5,
+  "worstRating": 1,
+  "items": []
+}

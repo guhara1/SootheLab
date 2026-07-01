@@ -50,6 +50,14 @@ const useCases = load("use-cases.json");
 const checks = load("checks.json");
 const policies = load("policies.json");
 const adminDongs = load("admin-dongs.json");
+const reviews = (() => {
+  try {
+    return load("reviews.json");
+  } catch {
+    return { items: [], reviewCount: 0, ratingValue: null };
+  }
+})();
+const hasReviews = Array.isArray(reviews.items) && reviews.items.length > 0;
 
 const cityBy = Object.fromEntries(cities.map((c) => [c.slug, c]));
 const lifeBy = Object.fromEntries(lifeAreas.map((l) => [l.slug, l]));
@@ -74,13 +82,13 @@ const clampDesc = (s) => {
   return t.length <= 80 ? t : t.slice(0, 79).trimEnd() + "…"; // 디스크립션 80자 이내
 };
 const abs = (p) => site.baseUrl + p;
-const registry = []; // {url, priority, changefreq, noindex}
+const registry = []; // {url, priority, changefreq, noindex, title, description}
 
-function writePage(urlPath, html, { priority = 0.6, changefreq = "monthly", noindex = false } = {}) {
+function writePage(urlPath, html, { priority = 0.6, changefreq = "monthly", noindex = false, title = "", description = "" } = {}) {
   const dir = path.join(OUT, urlPath.replace(/^\//, ""));
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), html, "utf8");
-  registry.push({ url: urlPath, priority, changefreq, noindex });
+  registry.push({ url: urlPath, priority, changefreq, noindex, title, description });
 }
 
 // ---- shared chrome --------------------------------------------------
@@ -227,6 +235,20 @@ function linkChips(links) {
   return `<ul class="linklist">${links.map(([h, t]) => `<li><a href="${h}">${esc(t)}</a></li>`).join("")}</ul>`;
 }
 
+// 롱테일 내부링크 블록 — 지역명 + 주제 키워드 앵커로 관련 안내 연결
+function longtailBlock(prefix, extra = []) {
+  const links = [
+    [`${BASE}use/hotel/`, `${prefix} 호텔·숙소 출장마사지 이용 안내`],
+    [`${BASE}use/officetel/`, `${prefix} 오피스텔 방문 예약 전 확인`],
+    [`${BASE}use/home/`, `${prefix} 자택 방문 마사지 이용 방법`],
+    [`${BASE}use/night/`, `${prefix} 야간 예약 가능 시간 안내`],
+    [`${BASE}check/address/`, `${prefix} 예약 전 방문 주소 확인`],
+    [`${BASE}check/travel-fee/`, `${prefix} 추가 이동비 기준 안내`],
+    ...extra,
+  ];
+  return `<section class="longtail"><h2>${esc(prefix)} 출장마사지 관련 자세히 보기</h2>${linkChips(links)}</section>`;
+}
+
 const DEFAULT_FAQ = [
   ["경기북부 전 지역 방문이 가능한가요?", "실제 방문 주소, 가까운 생활권, 예약 가능 시간, 이동 기준을 확인한 뒤 안내합니다."],
   ["역세권이 많은 지역은 어떻게 찾나요?", "시군 페이지에서 생활권과 역세권을 함께 확인하고, 실제 방문 주소와 건물 출입 방식을 확인하는 것이 좋습니다."],
@@ -260,8 +282,65 @@ function organizationNode() {
   };
 }
 
+// 실제 후기가 있을 때만 AggregateRating 생성 (허위 평점 금지)
+function aggregateRatingNode() {
+  if (!hasReviews) return null;
+  const vals = reviews.items.map((r) => Number(r.rating)).filter((n) => !isNaN(n));
+  const rv = reviews.ratingValue != null ? reviews.ratingValue : (vals.reduce((a, b) => a + b, 0) / (vals.length || 1)).toFixed(1);
+  return {
+    "@type": "AggregateRating",
+    ratingValue: String(rv),
+    reviewCount: reviews.reviewCount || reviews.items.length,
+    bestRating: reviews.bestRating || 5,
+    worstRating: reviews.worstRating || 1,
+  };
+}
+
+// Service + Offer(실제 요금) — 모든 페이지 공통
+function serviceNode(urlPath) {
+  const courses = (site.pricing && site.pricing.courses) || [];
+  const node = {
+    "@type": "Service",
+    "@id": abs(urlPath) + "#service",
+    serviceType: "출장마사지·방문 관리 지역 안내",
+    name: "간다GO 경기북부 출장마사지",
+    provider: { "@id": abs(BASE) + "#organization" },
+    areaServed: site.organization.areaServed,
+    url: abs(urlPath),
+  };
+  if (courses.length) {
+    node.hasOfferCatalog = {
+      "@type": "OfferCatalog",
+      name: "이용 코스와 요금",
+      itemListElement: courses.map((c) => ({
+        "@type": "Offer",
+        name: c.name,
+        price: String(c.price).replace(/[^0-9]/g, ""),
+        priceCurrency: "KRW",
+        itemOffered: { "@type": "Service", name: `${c.name} · ${c.desc}` },
+      })),
+    };
+  }
+  const ar = aggregateRatingNode();
+  if (ar) node.aggregateRating = ar;
+  return node;
+}
+
+function reviewNodes(urlPath) {
+  if (!hasReviews) return [];
+  return reviews.items.map((r, i) => ({
+    "@type": "Review",
+    "@id": abs(urlPath) + "#review" + (i + 1),
+    itemReviewed: { "@id": abs(urlPath) + "#service" },
+    author: { "@type": "Person", name: r.author || "고객" },
+    reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: 5, worstRating: 1 },
+    reviewBody: r.text || "",
+    datePublished: r.date || LAST_MOD,
+  }));
+}
+
 function schemaGraph({ urlPath, title, description, breadcrumb, faq, image }) {
-  const graph = [organizationNode()];
+  const graph = [organizationNode(), serviceNode(urlPath), ...reviewNodes(urlPath)];
   graph.push({
     "@type": "WebPage",
     "@id": abs(urlPath) + "#webpage",
@@ -330,6 +409,7 @@ function page({ urlPath, title, description, current, breadcrumb, image, faq, no
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
+${site.naverSiteVerification ? `<meta name="naver-site-verification" content="${site.naverSiteVerification}">\n` : ""}${site.googleSiteVerification ? `<meta name="google-site-verification" content="${site.googleSiteVerification}">\n` : ""}<link rel="alternate" type="application/rss+xml" title="간다GO 경기북부" href="${abs("/rss.xml")}">
 ${noindex ? '<meta name="robots" content="noindex,follow">\n' : ""}<link rel="canonical" href="${canonical}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="간다GO">
@@ -360,7 +440,7 @@ ${footer()}
 ${fabCall}
 </body>
 </html>`;
-  writePage(urlPath, html, { priority, changefreq, noindex });
+  writePage(urlPath, html, { priority, changefreq, noindex, title, description: desc });
 }
 
 // ---- content helpers ------------------------------------------------
@@ -654,6 +734,7 @@ function cityContent(c) {
       `${c.name}에서 방문형 서비스를 찾는 사용자가 자신의 지역과 이용 장소를 안전하게 확인할 수 있도록 돕기 위해 작성했습니다.`
     )
   );
+  p.push(longtailBlock(c.name, cityLifeChips(c).slice(0, 3).map(([h, t]) => [h, `${c.name} ${t} 생활권 안내`])));
   p.push(`<h2>관련 지역 보기</h2>${linkChips([
     [BASE, "경기북부 메인"],
     [`${BASE}area/${c.region}/`, `${region ? region.name : "권역"} 안내`],
@@ -799,6 +880,7 @@ function buildAdminDongs() {
         `${d.name} 방문 사용자가 자신의 지역과 이용 장소를 안전하게 확인할 수 있도록 돕기 위해 작성했습니다.`
       )
     );
+    parts.push(longtailBlock(`${c.name} ${d.name}`, life ? [[`${BASE}life/${life.slug}/`, `${d.name} ${life.name} 생활권 안내`]] : []));
     parts.push(
       `<h2>관련 지역 보기</h2>` +
         linkChips([
@@ -852,6 +934,7 @@ function buildLifeAreas() {
   ${policyNotice}
   ${faqBlock([[`${l.name}은 어떤 생활권인가요?`, `${l.name}은 ${city.name}에 속한 ${typeLabel} 생활권으로, ${esc(l.summary)}`], ["불법·선정적 서비스도 가능한가요?", "불법·선정적 서비스는 제공하거나 안내하지 않습니다."]])}
   ${eeat(`${l.name} 생활권 안내 콘텐츠 담당자가 작성하고 운영 책임자가 검수합니다.`, `포함 시군·행정동, 가까운 역, 이용 장소 기준으로 구성했습니다.`, `${l.name} 방문 사용자가 이동 기준을 안전하게 확인하도록 돕기 위해 작성했습니다.`)}
+  ${longtailBlock(l.name, [[`${BASE}${city.slug}/`, `${city.name} 출장마사지 지역 안내`]])}
   <h2>관련 지역 보기</h2>${linkChips([
     [`${BASE}${city.slug}/`, `${city.name} 전체`],
     ...l.neighbors.filter((n) => lifeBy[n]).map((n) => [`${BASE}life/${n}/`, `${lifeBy[n].name} 생활권`]),
@@ -895,6 +978,7 @@ function buildStations() {
   ${policyNotice}
   ${faqBlock([[`${s.name} 출구별로 안내가 다른가요?`, "출구별로 페이지를 나누지 않습니다. 실제 방문 주소와 건물 출입 방식을 기준으로 확인합니다."], ["불법·선정적 서비스도 가능한가요?", "불법·선정적 서비스는 제공하거나 안내하지 않습니다."]])}
   ${eeat(`${s.name} 역세권 안내 콘텐츠 담당자가 작성하고 운영 책임자가 검수합니다.`, `상위 시군·가까운 행정동·생활권·이용 장소 기준으로 구성했습니다.`, `${s.name} 인근 방문 사용자가 이동 기준을 안전하게 확인하도록 돕기 위해 작성했습니다.`)}
+  ${longtailBlock(`${s.name} 주변`, [[`${BASE}use/station-area/`, `${s.name} 역세권 출장마사지 이용 안내`]])}
   <h2>관련 지역 보기</h2>${linkChips([
     [`${BASE}${city.slug}/`, `${city.name} 전체`],
     ...(life ? [[`${BASE}life/${life.slug}/`, `${life.name} 생활권`]] : []),
@@ -936,6 +1020,7 @@ function buildOuter() {
   ${policyNotice}
   ${faqBlock([[`${o.name}은 추가 확인이 필요한가요?`, "외곽 지역은 차량 이동 가능 여부, 예약 가능 시간, 추가 이동비, 숙소 위치를 먼저 확인해야 합니다."], ["불법·선정적 서비스도 가능한가요?", "불법·선정적 서비스는 제공하거나 안내하지 않습니다."]])}
   ${eeat(`${o.name} 외곽 이동 안내 콘텐츠 담당자가 작성하고 운영 책임자가 검수합니다.`, `포함 읍면동·차량 이동·예약 가능 시간·추가 이동비 기준으로 구성했습니다.`, `${o.name} 외곽 방문 사용자가 이동 기준을 안전하게 확인하도록 돕기 위해 작성했습니다.`)}
+  ${longtailBlock(`${o.name} 외곽`, [[`${BASE}use/pension-lodging/`, `${o.name} 펜션·숙소 방문 이용 안내`], [`${BASE}use/outer-area/`, `${o.name} 외곽 지역 이용 기준 안내`]])}
   <h2>관련 지역 보기</h2>${linkChips([[`${BASE}${city.slug}/`, `${city.name} 전체`], [BASE, "경기북부 메인"]])}
 </article></div></section>`;
     page({
@@ -1069,9 +1154,42 @@ function buildMeta() {
     path.join(OUT, "sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
   );
+
+  // ---- RSS 2.0 피드 (네이버·구글 색인 발견 보조) ----
+  const RSS_PUBDATE = "Wed, 01 Jul 2026 09:00:00 +0900"; // LAST_MOD 기준 (배포 시 갱신)
+  const rssItems = registry
+    .filter((r) => !r.noindex)
+    .sort((a, b) => b.priority - a.priority)
+    .map(
+      (r) =>
+        `    <item>\n      <title>${esc(r.title)}</title>\n      <link>${abs(r.url)}</link>\n      <guid isPermaLink="true">${abs(r.url)}</guid>\n      <description>${esc(r.description)}</description>\n      <pubDate>${RSS_PUBDATE}</pubDate>\n    </item>`
+    )
+    .join("\n");
+  fs.writeFileSync(
+    path.join(OUT, "rss.xml"),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>간다GO 경기북부 출장마사지</title>\n    <link>${abs(BASE)}</link>\n    <atom:link href="${abs("/rss.xml")}" rel="self" type="application/rss+xml"/>\n    <description>${esc(site.defaultDescription)}</description>\n    <language>ko-KR</language>\n    <lastBuildDate>${RSS_PUBDATE}</lastBuildDate>\n${rssItems}\n  </channel>\n</rss>\n`
+  );
+
+  // ---- robots.txt (네이버 Yeti·구글 Googlebot 명시 허용 + 사이트맵/RSS) ----
   fs.writeFileSync(
     path.join(OUT, "robots.txt"),
-    `User-agent: *\nAllow: /\nSitemap: ${abs("/sitemap.xml")}\n`
+    [
+      "User-agent: *",
+      "Allow: /",
+      "",
+      "User-agent: Yeti", // Naver
+      "Allow: /",
+      "",
+      "User-agent: Googlebot",
+      "Allow: /",
+      "",
+      "User-agent: Bingbot",
+      "Allow: /",
+      "",
+      `Sitemap: ${abs("/sitemap.xml")}`,
+      `Sitemap: ${abs("/rss.xml")}`,
+      "",
+    ].join("\n")
   );
   // 404
   const body404 = `<section class="container"><div class="hero"><h1>페이지를 찾을 수 없습니다</h1><p class="lede">주소가 변경되었거나 준비 중인 페이지일 수 있습니다.</p><div class="cta-row"><a class="btn btn-primary" href="${BASE}">경기북부 메인으로</a></div></div></section>`;
