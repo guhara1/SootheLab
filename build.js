@@ -92,6 +92,36 @@ function header(current = "") {
 const tgIcon =
   '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.6 18.9 19c-.23 1-.83 1.26-1.68.78l-4.65-3.43-2.24 2.16c-.25.25-.46.46-.94.46l.33-4.74 8.63-7.8c.38-.33-.08-.52-.58-.19L7.44 13.2l-4.6-1.44c-1-.31-1.02-1 .21-1.48l17.98-6.93c.83-.31 1.56.2 1.29 1.25z"/></svg>';
 
+// 모바일 우측 하단 고정 전화 버튼 (클릭 시 전화연결)
+const fabCall = `<a class="fab-call" href="${site.phoneHref}" aria-label="전화 예약 ${site.phone}">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+</a>`;
+
+// 마사지 요금표 (메인 + 모든 지역 페이지 공통)
+function priceTable(regionName) {
+  const p = site.pricing;
+  const cards = p.courses
+    .map(
+      (c) => `<article class="price-card${c.featured ? " featured" : ""}">
+        ${c.featured ? '<span class="price-badge">추천</span>' : ""}
+        <h3>${esc(c.name)}</h3>
+        <div class="price-amt">${esc(c.price)}<span>${esc(c.unit)}</span></div>
+        <div class="price-dur">${esc(c.dur)}</div>
+        <p class="price-desc">${esc(c.desc)}</p>
+        <a class="btn ${c.featured ? "btn-primary" : "btn-outline"} price-btn" href="${site.phoneHref}">예약 문의</a>
+      </article>`
+    )
+    .join("\n      ");
+  const heading = regionName ? `${esc(regionName)} 출장마사지 이용 코스와 요금` : "이용 코스와 요금 살펴보기";
+  return `<section class="section price-sec"><div class="container">
+    <div class="section-head"><h2>${heading}</h2><p>${esc(p.note)}</p></div>
+    <div class="grid cols-3 price-grid">
+      ${cards}
+    </div>
+    <p class="price-note">${esc(p.disclaimer)} <a href="${BASE}policy/contact/">상세 요금 안내 보기 →</a></p>
+  </div></section>`;
+}
+
 function footer() {
   const yr = "2026";
   const col = (title, items) =>
@@ -246,7 +276,7 @@ function breadcrumbUI(items) {
 }
 
 // ---- page shell -----------------------------------------------------
-function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq }) {
+function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true }) {
   const desc = clampDesc(description);
   const canonical = abs(urlPath);
   const ogImg = abs(image ? image.url : OG_IMAGE);
@@ -278,8 +308,10 @@ ${header(current)}
 <div class="container">${crumbUI}</div>
 <main id="main">
 ${body}
+${price ? priceTable() : ""}
 </main>
 ${footer()}
+${fabCall}
 </body>
 </html>`;
   writePage(urlPath, html, { priority, changefreq, noindex });
@@ -410,7 +442,7 @@ function buildMain() {
   page({
     urlPath,
     title: "경기북부 출장마사지｜간다GO 10개 시군 생활권 안내",
-    description: "간다GO 경기북부 출장마사지·홈타이. 10개 시군 생활권·역세권·외곽 이동과 예약 전 확인을 안내합니다.",
+    description: "경기북부 출장마사지·홈타이 간다GO. 10개 시군 생활권·역세권·외곽 이동과 예약 전 확인 안내.",
     current: "",
     breadcrumb: crumb,
     faq: DEFAULT_FAQ,
@@ -456,7 +488,7 @@ function buildRegions() {
     page({
       urlPath,
       title: `${r.name} 출장마사지 지역 안내 | 간다GO`,
-      description: `간다GO ${r.name} 출장마사지. ${r.summary}`,
+      description: `${r.name} 출장마사지 · ${r.summary}`,
       current: "area/seoul-adjacent/",
       breadcrumb: crumb,
       body,
@@ -567,7 +599,7 @@ function buildCities() {
     page({
       urlPath,
       title: `${c.name} 출장마사지 | 간다GO 생활권 안내`,
-      description: `간다GO ${c.name} 출장마사지·홈타이. ${c.summary}`,
+      description: `${c.name} 출장마사지·홈타이 · ${c.summary}`,
       current: "goyang/",
       breadcrumb: crumb,
       faq,
@@ -597,7 +629,7 @@ function buildCities() {
       page({
         urlPath: dUrl,
         title: `${c.name} ${d.name} 출장마사지 | 간다GO`,
-        description: `간다GO ${c.name} ${d.name} 출장마사지. ${d.note}`,
+        description: `${c.name} ${d.name} 출장마사지 · ${d.note}`,
         current: "goyang/",
         breadcrumb: dCrumb,
         body: dbody,
@@ -626,6 +658,16 @@ function buildAdminDongs() {
       { name: d.name, url: urlPath },
     ];
     const siblings = (dongsByCity[d.city] || []).filter((x) => x.slug !== d.slug).slice(0, 6);
+    const adj = (c.adjacent || []).filter((s) => cityBy[s]).map((s) => cityBy[s].name);
+    const typeTip = {
+      newtown: "단지명·동호수와 방문차량 등록 여부",
+      "station-area": "가까운 역 출구가 아닌 실제 동호수",
+      business: "오피스텔 공동현관·엘리베이터 카드키 여부",
+      residential: "공동현관 비밀번호와 주차 가능 여부",
+      outer: "차량 진입 경로와 예약 가능 시간",
+    }[d.type] || "정확한 방문 주소";
+    // 모든 행정동 색인 유지(noindex 미사용). 도어웨이 대응은 콘텐츠 고유성으로만.
+    const dongNoindex = d.noindex === true;
     const useLink =
       d.type === "outer"
         ? [`${BASE}use/pension-lodging/`, "펜션·숙소권 이용"]
@@ -636,7 +678,7 @@ function buildAdminDongs() {
         : [`${BASE}use/home/`, "자택 이용"];
 
     const parts = [];
-    parts.push(`<h2>${d.name} 지역 개요</h2><p>${esc(summary)} 상위 시군은 <a href="${BASE}${c.slug}/">${c.name}</a>${district ? `, 상위 행정구는 <a href="${BASE}${c.slug}/${district.slug}/">${district.name}</a>` : ""}이며, ${typeLabel} 생활권으로 분류합니다. 같은 ${c.name} 안에서도 ${d.name}은 이동 기준이 다를 수 있어 방문 주소가 ${d.name}에 속하는지 먼저 확인하는 것이 정확합니다.</p>`);
+    parts.push(`<h2>${d.name} 지역 개요</h2><p>${esc(summary)} 상위 시군은 <a href="${BASE}${c.slug}/">${c.name}</a>${district ? `, 상위 행정구는 <a href="${BASE}${c.slug}/${district.slug}/">${district.name}</a>` : ""}이며, ${typeLabel} 생활권으로 분류합니다. 같은 ${c.name} 안에서도 ${d.name}은 이동 기준이 다를 수 있어 방문 주소가 ${d.name}에 속하는지 먼저 확인하는 것이 정확합니다. ${d.name} 방문 예약 시 ${esc(covers)} 내 ${typeTip}을(를) 함께 확인하면 이동이 원활합니다.${adj.length ? ` ${d.name}은 ${nameList(adj)} 방향 접근도 함께 고려되는 위치입니다.` : ""}</p>`);
     if (life) {
       parts.push(`<h2>포함 생활권</h2><p>${d.name}은 <a href="${BASE}life/${life.slug}/">${life.name}</a> 생활권에 포함됩니다. ${esc(life.summary)}</p>`);
     }
@@ -694,12 +736,13 @@ function buildAdminDongs() {
     page({
       urlPath,
       title: `${c.name} ${d.name} 출장마사지 | 간다GO`,
-      description: `간다GO ${c.name} ${d.name} 출장마사지. ${covers} 예약 전 확인 안내.`,
+      description: `${c.name} ${d.name} 출장마사지 · ${covers} 방문 예약 전 확인 안내.`,
       current: "goyang/",
       breadcrumb: crumb,
       image: { url: OG_IMAGE, alt: `${c.name} ${d.name} 방문형 관리 안내 이미지` },
       body,
       priority: 0.5,
+      noindex: dongNoindex,
     });
   });
 }
@@ -737,7 +780,7 @@ function buildLifeAreas() {
     page({
       urlPath,
       title: `${l.name} 출장마사지 생활권 안내 | 간다GO`,
-      description: `간다GO ${l.name} 출장마사지 생활권 안내. ${l.summary}`,
+      description: `${l.name} 출장마사지 · ${l.summary}`,
       current: "life/ilsan-kintex/",
       breadcrumb: crumb,
       image: { url: OG_IMAGE, alt: `${l.name} 생활권 방문형 관리 안내 이미지` },
@@ -762,7 +805,7 @@ function buildStations() {
     const body = `
 <section class="container"><div class="hero"><h1>${s.name} 출장마사지 · ${city.name} 역세권 안내</h1><p class="lede">${city.name} ${life ? life.name + " 생활권" : ""} 인근 ${s.name} 역세권 이동 기준을 안내합니다.</p></div></section>
 <section class="section"><div class="container"><article class="article">
-  <h2>역세권 개요</h2><p>${s.name}은 ${city.name}(${s.line})에 위치한 역으로, ${life ? `<a href="${BASE}life/${life.slug}/">${life.name}</a> 생활권` : "인근 생활권"}과 이어집니다. 상위 시군은 <a href="${BASE}${city.slug}/">${city.name}</a>입니다.</p>
+  <h2>역세권 개요</h2><p>${s.name}은 ${city.name}(${s.line})에 위치한 역으로, ${life ? `<a href="${BASE}life/${life.slug}/">${life.name}</a> 생활권` : "인근 생활권"}과 이어집니다. 상위 시군은 <a href="${BASE}${city.slug}/">${city.name}</a>입니다. ${s.name} 예약은 ${nameList(s.dongs)} 방면 실제 방문 주소를 기준으로 안내하며, ${s.transfer ? `${s.line} 환승 노선이 겹쳐 유동 인구가 많은 편이라 정확한 출입구와 동호수 확인이 특히 중요합니다.` : `${s.line} 단일 노선 역으로 출구 혼선이 적은 편이지만 실제 건물 위치를 먼저 확인하는 것이 좋습니다.`}</p>
   <h2>가까운 행정동</h2><p>${s.name} 인근 대표 행정동으로는 ${nameList(s.dongs)} 등이 있습니다.</p>
   <h2>${s.transfer ? "환승역 안내" : "출구별 페이지를 만들지 않는 이유"}</h2><p>${s.transfer ? `${s.name}은 ${s.line} 환승 성격이 있는 역이지만, 노선별로 페이지를 나누지 않고 역명 기준 1개로 안내합니다.` : `${s.name}은 출구별로 페이지를 나누지 않습니다. 출구가 아닌 실제 방문 주소를 기준으로 확인하는 것이 정확합니다.`} 방문 주소와 건물 출입 방식을 함께 확인하세요.</p>
   <h2>이용 장소별 기준</h2><p>${s.name} 역세권은 상권과 주거지가 섞여 있어 자택·오피스텔·역세권 이용 시 방문 주소 기준 확인이 특히 중요합니다.</p>
@@ -780,7 +823,7 @@ function buildStations() {
     page({
       urlPath,
       title: `${s.name} 출장마사지 | 간다GO ${city.name} 역세권`,
-      description: `간다GO ${s.name} 출장마사지. ${city.name} 역세권 이동 기준과 예약 전 확인 안내.`,
+      description: `${s.name} 출장마사지 · ${city.name} 역세권 이동 기준과 예약 전 확인 안내.`,
       current: "station/uijeongbu-station/",
       breadcrumb: crumb,
       image: { url: OG_IMAGE, alt: `${s.name} 역세권 방문형 관리 안내 이미지` },
@@ -803,7 +846,7 @@ function buildOuter() {
     const body = `
 <section class="container"><div class="hero"><h1>${o.name} 출장마사지 외곽 이동 기준 안내</h1><p class="lede">${esc(o.summary)}</p></div></section>
 <section class="section"><div class="container"><article class="article">
-  <h2>외곽 지역 개요</h2><p>${esc(o.summary)} 상위 시군은 <a href="${BASE}${city.slug}/">${city.name}</a>이며, 도심형 생활권과 이동 기준이 다릅니다.</p>
+  <h2>외곽 지역 개요</h2><p>${esc(o.summary)} 상위 시군은 <a href="${BASE}${city.slug}/">${city.name}</a>이며, 도심형 생활권과 이동 기준이 다릅니다. ${o.name} 권역은 ${nameList(o.dongs)} 등을 포함하며, 지역마다 진입 도로와 소요 시간이 달라 ${o.dongs.length}개 읍면동 각각의 정확한 위치와 차량 진입 경로를 예약 시 확인하는 것이 중요합니다.</p>
   <h2>포함 읍면동</h2><p>${nameList(o.dongs)} 등이 포함됩니다.</p>
   <h2>차량 이동 기준</h2><p>${o.name}은 지하철역보다 차량 이동이 중심입니다. 방문 주소, 차량 진입 가능 여부, 예약 가능 시간, 추가 이동비를 예약 전에 먼저 확인해야 합니다.</p>
   <h2>예약 가능 시간 · 추가 이동비</h2><p>외곽·심야 이동 시 추가 이동비가 발생할 수 있으며, 정확한 기준은 예약 시 안내합니다. 펜션·숙소를 이용하는 경우 위치와 진입 방식을 함께 확인하세요.</p>
@@ -817,7 +860,7 @@ function buildOuter() {
     page({
       urlPath,
       title: `${o.name} 출장마사지 외곽 이동 기준 | 간다GO`,
-      description: `간다GO ${o.name} 외곽 이동 기준. 차량 이동·예약 가능 시간·추가 이동비 안내.`,
+      description: `${o.name} 출장마사지 · 외곽 차량 이동·예약 가능 시간·추가 이동비 안내.`,
       current: "outer/pocheon-songu/",
       breadcrumb: crumb,
       image: { url: OG_IMAGE, alt: `${o.name} 외곽 이동 기준 안내 이미지` },
@@ -853,7 +896,7 @@ function simpleDetailPage(item, kind) {
   page({
     urlPath,
     title: `${item.h1} | 간다GO`,
-    description: `간다GO ${item.name} 안내. ${item.summary}`,
+    description: `경기북부 출장마사지 · ${item.name} 안내. ${item.summary}`,
     current: navCur,
     breadcrumb: crumb,
     image: { url: OG_IMAGE, alt: `${item.name} 안내 이미지` },
@@ -895,6 +938,7 @@ function buildPolicies() {
       body,
       priority: pol.slug === "contact" ? 0.7 : 0.4,
       changefreq: "yearly",
+      price: pol.slug === "contact", // 문의 페이지에는 요금표 노출, 그 외 운영기준 페이지는 제외
     });
   });
 }
@@ -938,6 +982,7 @@ function buildMeta() {
     breadcrumb: [{ name: "홈", url: BASE }],
     body: body404,
     noindex: true,
+    price: false,
   });
   fs.copyFileSync(path.join(OUT, ...BASE_SEGS, "404", "index.html"), path.join(OUT, "404.html"));
   // 하위 경로 배포일 때만 루트(/) → BASE 리다이렉트. 루트 배포면 메인이 이미 /index.html.

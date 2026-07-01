@@ -19,6 +19,15 @@
   "reviewer": {
     "name": "운영 책임자 · 콘텐츠 품질 검수 담당자"
   },
+  "pricing": {
+    "note": "60·90·120분 코스별 기준 요금이며, 추가 비용 없이 있는 그대로 안내해 드립니다.",
+    "disclaimer": "지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다.",
+    "courses": [
+      { "name": "60분 코스", "price": "90,000", "unit": "원", "dur": "60분", "desc": "기본 컨디션·릴랙스 케어", "featured": false },
+      { "name": "90분 코스", "price": "150,000", "unit": "원", "dur": "90분", "desc": "아로마 포함 추천 구성", "featured": true },
+      { "name": "120분 코스", "price": "180,000", "unit": "원", "dur": "120분", "desc": "전신 집중 프리미엄 케어", "featured": false }
+    ]
+  },
   "ogImage": "/gyeonggi-north/assets/og-default.svg",
   "organization": {
     "name": "간다GO",
