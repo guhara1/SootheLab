@@ -452,8 +452,8 @@ function breadcrumbUI(items) {
 }
 
 // ---- page shell -----------------------------------------------------
-function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true, heroImage = true, showReviews = true }) {
-  const desc = clampDesc(description);
+function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true, heroImage = true, showReviews = true, clampDescription = true }) {
+  const desc = clampDescription ? clampDesc(description) : String(description).replace(/\s+/g, " ").trim();
   const canonical = abs(urlPath);
   const ogImg = abs(image ? image.url : OG_IMAGE);
   const crumbUI = breadcrumb && breadcrumb.length > 1 ? breadcrumbUI(breadcrumb) : "";
@@ -660,8 +660,10 @@ function buildMain() {
 
   page({
     urlPath,
-    title: "경기북부 출장마사지｜간다GO 10개 시군 생활권 안내",
-    description: "경기북부 출장마사지·홈타이 간다GO. 10개 시군 생활권·역세권·외곽 이동과 예약 전 확인 안내.",
+    title: "경기 북부 출장마사지 | 지역별 맞춤 홈타이 안내 간다GO",
+    description:
+      "간다GO에서는 경기 북부 출장마사지를 찾는 분들을 위해 의정부, 남양주, 고양, 파주, 양주 등 주요 지역별 이용 안내와 예약 정보를 정리했습니다.",
+    clampDescription: false,
     current: "",
     breadcrumb: crumb,
     faq: DEFAULT_FAQ,
