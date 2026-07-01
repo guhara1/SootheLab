@@ -119,6 +119,18 @@ const fabCall = `<a class="fab-call" href="${site.phoneHref}" aria-label="전화
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
 </a>`;
 
+// 인라인 아이콘 (럭셔리 스파 섹션용, currentColor)
+const icons = {
+  bed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18h18"/><path d="M7 10V8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M3 21v-3"/><path d="M21 21v-3"/></svg>',
+  leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/><path d="M5 12h14"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>',
+};
+
 // 히어로 밑 이미지 밴드 (메인 + 모든 지역 페이지 공통) — 페이지 셸에서 히어로 섹션 안에 주입
 const HERO_IMAGE_URL = resolveHeroImage();
 const heroImageBand = HERO_IMAGE_URL
@@ -406,6 +418,29 @@ function buildMain() {
 
 <section class="section">
   <div class="container">
+    <div class="section-head center-head"><span class="eyebrow">WHY 간다GO</span><h2>프리미엄 방문 케어의 기준</h2><p>깨끗한 위생과 전 지역 안내로, 원하는 장소에서 편안한 힐링을 경험하세요.</p></div>
+    <div class="grid cols-4 feature-grid">
+      <article class="feature-card"><span class="feature-ic">${icons.bed}</span><h3>원하는 장소 방문</h3><p>자택·호텔·숙소·오피스텔 등 편한 장소로 직접 방문합니다.</p></article>
+      <article class="feature-card"><span class="feature-ic">${icons.leaf}</span><h3>프리미엄 오일 케어</h3><p>청결한 위생과 프리미엄 오일로 편안한 컨디션 관리를 제공합니다.</p></article>
+      <article class="feature-card"><span class="feature-ic">${icons.pin}</span><h3>경기북부 10개 시군</h3><p>고양·의정부·남양주 등 10개 시군 생활권을 폭넓게 안내합니다.</p></article>
+      <article class="feature-card"><span class="feature-ic">${icons.shield}</span><h3>예약 전 안전 확인</h3><p>방문 주소·시간·이동 기준을 미리 확인해 안전하게 예약합니다.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section stat-band">
+  <div class="container">
+    <div class="stat-row">
+      <div class="stat"><span class="stat-num">10</span><span class="stat-label">개 시군</span></div>
+      <div class="stat"><span class="stat-num">100<em>+</em></span><span class="stat-label">행정동 안내</span></div>
+      <div class="stat"><span class="stat-num">38</span><span class="stat-label">역세권</span></div>
+      <div class="stat"><span class="stat-num">24<em>h</em></span><span class="stat-label">예약 상담</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
     <div class="section-head">
       <h2>경기북부는 시군 이름만으로 판단하기 어렵습니다</h2>
       <p>경기북부는 서울 인접권, 신도시, 접경 지역, 외곽 관광권이 함께 있는 넓은 지역입니다.</p>
@@ -420,6 +455,18 @@ function buildMain() {
     <div class="section-head"><h2>경기북부 시군별 지역 안내</h2><p>10개 시군을 생활권·역세권·이동 기준으로 나눠 안내합니다.</p></div>
     <div class="grid cols-3">
     ${cityCards}
+    </div>
+  </div>
+</section>
+
+<section class="section alt process-sec">
+  <div class="container">
+    <div class="section-head center-head"><span class="eyebrow">HOW IT WORKS</span><h2>간다GO 이용 절차</h2><p>문의부터 힐링까지, 네 단계로 간편하게 안내합니다.</p></div>
+    <div class="grid cols-4 step-grid">
+      <article class="step-card"><span class="step-no">01</span><span class="step-ic">${icons.phone}</span><h3>예약 문의</h3><p>전화 또는 텔레그램으로 지역과 원하는 시간을 문의합니다.</p></article>
+      <article class="step-card"><span class="step-no">02</span><span class="step-ic">${icons.pin}</span><h3>지역·시간 확인</h3><p>방문 주소, 가까운 생활권, 이동 기준을 함께 확인합니다.</p></article>
+      <article class="step-card"><span class="step-no">03</span><span class="step-ic">${icons.car}</span><h3>방문 케어</h3><p>원하는 장소로 방문해 프리미엄 오일 케어를 진행합니다.</p></article>
+      <article class="step-card"><span class="step-no">04</span><span class="step-ic">${icons.spark}</span><h3>힐링 완료</h3><p>편안한 마무리와 함께 다음 예약을 안내해 드립니다.</p></article>
     </div>
   </div>
 </section>

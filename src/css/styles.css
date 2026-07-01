@@ -262,6 +262,68 @@ p  { margin: 0 0 var(--sp-4); }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: var(--sp-5) 0; font-size: var(--fs-xs); color: var(--c-ink-400); display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: space-between; }
 .footer-bottom a { color: var(--c-ink-400); }
 
+/* ---- Eyebrow labels & centered heads -------------------------- */
+.eyebrow {
+  display: inline-block; font-family: var(--font-sans);
+  font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.26em;
+  color: var(--c-gold-600); margin-bottom: var(--sp-3);
+}
+.center-head { text-align: center; margin-left: auto; margin-right: auto; }
+.center-head h2::before { left: 50%; transform: translateX(-50%); }
+
+/* ---- Feature cards (WHY) -------------------------------------- */
+.feature-grid { margin-top: var(--sp-6); }
+.feature-card {
+  text-align: center; padding: var(--sp-7) var(--sp-5);
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-sm);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--c-gold-400); }
+.feature-ic {
+  display: inline-grid; place-items: center; width: 62px; height: 62px;
+  border-radius: 50%; margin-bottom: var(--sp-4); color: var(--c-gold-700);
+  background: radial-gradient(circle at 32% 28%, var(--c-gold-050), #ffffff);
+  border: 1px solid var(--c-gold-100); box-shadow: var(--shadow-gold);
+}
+.feature-ic svg { width: 28px; height: 28px; }
+.feature-card h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-md); }
+.feature-card p { margin: 0; color: var(--text-muted); font-size: var(--fs-sm); }
+
+/* ---- Stat band ------------------------------------------------ */
+.stat-band { padding: var(--sp-6) 0 var(--sp-8); }
+.stat-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-4);
+  background: var(--overlay-hero); border: 1px solid rgba(201, 162, 75, 0.18);
+  border-radius: var(--r-xl); padding: var(--sp-7) var(--sp-5); box-shadow: var(--shadow-lg);
+}
+.stat { text-align: center; color: #fff; position: relative; }
+.stat + .stat::before {
+  content: ""; position: absolute; left: 0; top: 50%; height: 46px; width: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, transparent, rgba(201, 162, 75, 0.55), transparent);
+}
+.stat-num { display: block; font-family: var(--font-serif); font-size: 2.7rem; font-weight: 700; color: #fff; line-height: 1; }
+.stat-num em { font-style: normal; color: var(--c-gold-300); font-size: 1.4rem; }
+.stat-label { display: block; margin-top: var(--sp-3); font-size: var(--fs-sm); color: var(--c-ink-300); letter-spacing: 0.02em; }
+@media (max-width: 640px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); gap: var(--sp-6); }
+  .stat:nth-child(odd)::before { display: none; }
+}
+
+/* ---- Process steps -------------------------------------------- */
+.step-grid { margin-top: var(--sp-6); }
+.step-card {
+  position: relative; padding: var(--sp-6) var(--sp-5);
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-sm);
+}
+.step-no { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--c-gold-400); }
+.step-ic { display: block; width: 34px; height: 34px; margin: var(--sp-3) 0 var(--sp-4); color: var(--c-orange-600); }
+.step-ic svg { width: 34px; height: 34px; }
+.step-card h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-md); }
+.step-card p { margin: 0; color: var(--text-muted); font-size: var(--fs-sm); }
+
 /* ---- Pricing table -------------------------------------------- */
 .price-sec { background: var(--overlay-hero); color: var(--text-invert); border: none; }
 .price-sec::before { content: ""; display: block; }
