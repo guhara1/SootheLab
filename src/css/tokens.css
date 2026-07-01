@@ -7,18 +7,32 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
 
 :root {
-  /* ---- Core neutrals: deep charcoal → warm off-white -------------- */
-  --c-ink-900: #14110f;
-  --c-ink-800: #201b18;
-  --c-ink-700: #2f2823;
-  --c-ink-600: #4a3f37;
-  --c-ink-500: #6b5d52;
-  --c-ink-400: #938578;
-  --c-ink-300: #c2b6aa;
-  --c-ink-200: #e4dcd2;
-  --c-ink-100: #efe8dd;
-  --c-ink-050: #f7f1e8;
-  --c-paper:   #fcf8f1;
+  /* ---- Core neutrals: forest-charcoal → cool ivory (스파 톤) ------ */
+  --c-ink-900: #0f1e18;
+  --c-ink-800: #26302b;
+  --c-ink-700: #37433d;
+  --c-ink-600: #505a53;
+  --c-ink-500: #6d766f;
+  --c-ink-400: #949c95;
+  --c-ink-300: #c0c5bd;
+  --c-ink-200: #dee1d8;
+  --c-ink-100: #eaece4;
+  --c-ink-050: #f1f2ea;
+  --c-paper:   #f4f4ec;
+
+  /* ---- Deep forest surfaces (다크 패널·히어로·푸터) --------------- */
+  --c-forest-900: #101f19;
+  --c-forest-800: #16302a;
+  --c-forest-700: #1e3f37;
+
+  /* ---- Primary spa accent: emerald green ------------------------ */
+  --c-emerald-800: #123f34;
+  --c-emerald-700: #175346;
+  --c-emerald-600: #216254;
+  --c-emerald-500: #2e7d6a;
+  --c-emerald-400: #4c9c88;
+  --c-emerald-100: #d7e9e3;
+  --c-emerald-050: #eaf3ef;
 
   /* ---- Premium accent: warm amber / signature orange ------------- */
   --c-orange-700: #b34700;
@@ -54,20 +68,21 @@
 
   /* ---- Semantic aliases ----------------------------------------- */
   --bg:            var(--c-paper);
-  --bg-subtle:     var(--c-ink-050);
-  --bg-elevated:   #ffffff;
-  --surface-ink:   var(--c-ink-900);
+  --bg-subtle:     var(--c-emerald-050);
+  --bg-elevated:   #fbfcf9;
+  --surface-ink:   var(--c-forest-900);
   --text:          var(--c-ink-800);
   --text-muted:    var(--c-ink-500);
   --text-faint:    var(--c-ink-400);
-  --text-invert:   var(--c-ink-050);
+  --text-invert:   #f1f4ef;
   --border:        var(--c-ink-200);
   --border-strong: var(--c-ink-300);
-  --accent:        var(--c-orange-500);
-  --accent-hover:  var(--c-orange-600);
-  --accent-press:  var(--c-orange-700);
-  --link:          var(--c-orange-700);
-  --link-hover:    var(--c-orange-600);
+  /* 주 강조 = 에메랄드(스파 그린), 오렌지는 CTA 포인트로 유지 */
+  --accent:        var(--c-emerald-600);
+  --accent-hover:  var(--c-emerald-500);
+  --accent-press:  var(--c-emerald-700);
+  --link:          var(--c-emerald-700);
+  --link-hover:    var(--c-emerald-600);
 
   /* ---- Typography ---------------------------------------------- */
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
@@ -95,43 +110,44 @@
   --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
   --container: 1120px;
 
-  --shadow-sm: 0 1px 2px rgba(40, 32, 24, 0.05), 0 2px 8px rgba(40, 32, 24, 0.05);
-  --shadow-md: 0 10px 30px rgba(40, 32, 24, 0.08), 0 3px 10px rgba(40, 32, 24, 0.05);
-  --shadow-lg: 0 30px 70px rgba(30, 22, 16, 0.18), 0 10px 24px rgba(30, 22, 16, 0.08);
-  --shadow-accent: 0 10px 26px rgba(242, 107, 29, 0.28);
-  --shadow-gold: 0 8px 30px rgba(201, 162, 75, 0.22);
+  --shadow-sm: 0 1px 2px rgba(16, 31, 25, 0.05), 0 2px 8px rgba(16, 31, 25, 0.05);
+  --shadow-md: 0 10px 30px rgba(16, 31, 25, 0.08), 0 3px 10px rgba(16, 31, 25, 0.06);
+  --shadow-lg: 0 30px 70px rgba(10, 24, 19, 0.20), 0 10px 24px rgba(10, 24, 19, 0.10);
+  --shadow-accent: 0 10px 26px rgba(242, 107, 29, 0.26);
+  --shadow-gold: 0 8px 30px rgba(201, 162, 75, 0.20);
+  --shadow-emerald: 0 10px 26px rgba(33, 98, 84, 0.24);
 
-  /* ---- Component overlays (럭셔리 스파 오버레이) ---------------- */
+  /* ---- Component overlays (에메랄드·골드 스파 오버레이) ---------- */
   --overlay-hero:
-    radial-gradient(1200px 560px at 82% -10%, rgba(201, 162, 75, 0.20), transparent 58%),
-    radial-gradient(1000px 520px at 6% 112%, rgba(95, 122, 107, 0.16), transparent 60%),
-    linear-gradient(165deg, #211a14 0%, #2c2219 55%, #1c1610 100%);
+    radial-gradient(1200px 560px at 82% -10%, rgba(201, 162, 75, 0.22), transparent 58%),
+    radial-gradient(1000px 560px at 4% 114%, rgba(46, 125, 106, 0.28), transparent 60%),
+    linear-gradient(160deg, #123024 0%, #16302a 52%, #0f221b 100%);
   --overlay-card-sheen:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 46%);
+    linear-gradient(155deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 46%);
   --overlay-glass:
-    linear-gradient(180deg, rgba(252, 248, 241, 0.9), rgba(252, 248, 241, 0.74));
+    linear-gradient(180deg, rgba(244, 244, 236, 0.9), rgba(244, 244, 236, 0.74));
   --overlay-gold-rule:
     linear-gradient(90deg, transparent, var(--c-gold-500) 20%, var(--c-gold-300) 50%, var(--c-gold-500) 80%, transparent);
   --overlay-gold-hairline:
     linear-gradient(90deg, transparent, var(--c-gold-500) 50%, transparent);
   --overlay-image-scrim:
-    linear-gradient(180deg, rgba(20, 15, 11, 0) 40%, rgba(20, 15, 11, 0.55) 100%);
+    linear-gradient(180deg, rgba(15, 31, 24, 0) 38%, rgba(15, 31, 24, 0.58) 100%);
   --overlay-section-fade:
     linear-gradient(180deg, var(--bg), var(--bg-subtle));
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:          #17130f;
-    --bg-subtle:   #1e1813;
-    --bg-elevated: #241d17;
-    --text:        #f1e9df;
-    --text-muted:  #b6a696;
-    --text-faint:  #8c7c6d;
-    --border:      #3a2f26;
-    --border-strong: #4a3d31;
-    --link:        var(--c-orange-300);
-    --link-hover:  var(--c-orange-400);
-    --overlay-glass: linear-gradient(180deg, rgba(36, 29, 23, 0.86), rgba(36, 29, 23, 0.7));
+    --bg:          #101f19;
+    --bg-subtle:   #16302a;
+    --bg-elevated: #16302a;
+    --text:        #ecf1ec;
+    --text-muted:  #a6b3ac;
+    --text-faint:  #7f8d85;
+    --border:      #2a3d36;
+    --border-strong: #3a4f47;
+    --link:        var(--c-emerald-400);
+    --link-hover:  #6bb5a0;
+    --overlay-glass: linear-gradient(180deg, rgba(22, 48, 42, 0.88), rgba(22, 48, 42, 0.72));
   }
 }
