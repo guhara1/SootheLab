@@ -8,15 +8,8 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# 루트 접속 → 경기북부 메인으로 (SEO 301)
-[[redirects]]
-  from = "/"
-  to = "/gyeonggi-north/"
-  status = 301
-  force = true
-
 # 정적 자산 캐시
 [[headers]]
-  for = "/gyeonggi-north/assets/*"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"

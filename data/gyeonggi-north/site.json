@@ -5,7 +5,7 @@
   "phone": "0508-202-4719",
   "phoneHref": "tel:05082024719",
   "baseUrl": "https://gandago.co.kr",
-  "basePath": "/gyeonggi-north/",
+  "basePath": "/",
   "defaultDescription": "간다GO 경기북부 출장마사지·홈타이. 10개 시군 생활권·역세권·예약 전 확인을 안내합니다.",
   "telegram": {
     "reserve": "https://t.me/gandago_book",

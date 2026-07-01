@@ -10,11 +10,15 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA = path.join(__dirname, "data", "gyeonggi-north");
 const OUT = path.join(__dirname, "dist");
-const BASE = "/gyeonggi-north/";
-const ASSETS = BASE + "assets/";
 
 const load = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), "utf8"));
 const site = load("site.json");
+
+const BASE = site.basePath || "/"; // 루트 배포: "/" · 하위 배포 시 "/gyeonggi-north/" 등
+const BASE_SEGS = BASE.split("/").filter(Boolean); // 파일 경로용 세그먼트
+const ASSETS = BASE + "assets/";
+const OG_IMAGE = ASSETS + "og-default.svg";
+const LOGO = ASSETS + "logo.svg";
 const cities = load("cities.json");
 const regions = load("regions.json");
 const lifeAreas = load("life-areas.json");
@@ -176,7 +180,7 @@ function organizationNode() {
     "@id": abs(BASE) + "#organization",
     name: site.organization.name,
     url: abs(BASE),
-    logo: abs(site.organization.logo),
+    logo: abs(LOGO),
     areaServed: site.organization.areaServed,
     contactPoint: {
       "@type": "ContactPoint",
@@ -245,7 +249,7 @@ function breadcrumbUI(items) {
 function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq }) {
   const desc = clampDesc(description);
   const canonical = abs(urlPath);
-  const ogImg = abs(image ? image.url : site.ogImage);
+  const ogImg = abs(image ? image.url : OG_IMAGE);
   const crumbUI = breadcrumb && breadcrumb.length > 1 ? breadcrumbUI(breadcrumb) : "";
   const html = `<!doctype html>
 <html lang="ko">
@@ -410,7 +414,7 @@ function buildMain() {
     current: "",
     breadcrumb: crumb,
     faq: DEFAULT_FAQ,
-    image: { url: site.ogImage, alt: "경기북부 10개 시군 생활권 방문형 관리 안내 이미지" },
+    image: { url: OG_IMAGE, alt: "경기북부 10개 시군 생활권 방문형 관리 안내 이미지" },
     body,
     priority: 1.0,
     changefreq: "weekly",
@@ -567,7 +571,7 @@ function buildCities() {
       current: "goyang/",
       breadcrumb: crumb,
       faq,
-      image: { url: site.ogImage, alt: `${c.name} 생활권 방문형 관리 안내 이미지` },
+      image: { url: OG_IMAGE, alt: `${c.name} 생활권 방문형 관리 안내 이미지` },
       body,
       priority: 0.8,
       changefreq: "weekly",
@@ -693,7 +697,7 @@ function buildAdminDongs() {
       description: `간다GO ${c.name} ${d.name} 출장마사지. ${covers} 예약 전 확인 안내.`,
       current: "goyang/",
       breadcrumb: crumb,
-      image: { url: site.ogImage, alt: `${c.name} ${d.name} 방문형 관리 안내 이미지` },
+      image: { url: OG_IMAGE, alt: `${c.name} ${d.name} 방문형 관리 안내 이미지` },
       body,
       priority: 0.5,
     });
@@ -736,7 +740,7 @@ function buildLifeAreas() {
       description: `간다GO ${l.name} 출장마사지 생활권 안내. ${l.summary}`,
       current: "life/ilsan-kintex/",
       breadcrumb: crumb,
-      image: { url: site.ogImage, alt: `${l.name} 생활권 방문형 관리 안내 이미지` },
+      image: { url: OG_IMAGE, alt: `${l.name} 생활권 방문형 관리 안내 이미지` },
       body,
       priority: 0.7,
     });
@@ -779,7 +783,7 @@ function buildStations() {
       description: `간다GO ${s.name} 출장마사지. ${city.name} 역세권 이동 기준과 예약 전 확인 안내.`,
       current: "station/uijeongbu-station/",
       breadcrumb: crumb,
-      image: { url: site.ogImage, alt: `${s.name} 역세권 방문형 관리 안내 이미지` },
+      image: { url: OG_IMAGE, alt: `${s.name} 역세권 방문형 관리 안내 이미지` },
       body,
       priority: 0.6,
     });
@@ -816,7 +820,7 @@ function buildOuter() {
       description: `간다GO ${o.name} 외곽 이동 기준. 차량 이동·예약 가능 시간·추가 이동비 안내.`,
       current: "outer/pocheon-songu/",
       breadcrumb: crumb,
-      image: { url: site.ogImage, alt: `${o.name} 외곽 이동 기준 안내 이미지` },
+      image: { url: OG_IMAGE, alt: `${o.name} 외곽 이동 기준 안내 이미지` },
       body,
       priority: 0.6,
     });
@@ -852,7 +856,7 @@ function simpleDetailPage(item, kind) {
     description: `간다GO ${item.name} 안내. ${item.summary}`,
     current: navCur,
     breadcrumb: crumb,
-    image: { url: site.ogImage, alt: `${item.name} 안내 이미지` },
+    image: { url: OG_IMAGE, alt: `${item.name} 안내 이미지` },
     body,
     priority: 0.55,
   });
@@ -897,7 +901,7 @@ function buildPolicies() {
 
 // ---- assets: css + svg ---------------------------------------------
 function buildAssets() {
-  const assetDir = path.join(OUT, "gyeonggi-north", "assets");
+  const assetDir = path.join(OUT, ...BASE_SEGS, "assets");
   fs.mkdirSync(assetDir, { recursive: true });
   // inline @import 대신 두 파일 모두 복사
   fs.copyFileSync(path.join(__dirname, "src", "css", "tokens.css"), path.join(assetDir, "tokens.css"));
@@ -935,12 +939,14 @@ function buildMeta() {
     body: body404,
     noindex: true,
   });
-  fs.copyFileSync(path.join(OUT, "gyeonggi-north", "404", "index.html"), path.join(OUT, "404.html"));
-  // 루트 리다이렉트
-  fs.writeFileSync(
-    path.join(OUT, "index.html"),
-    `<!doctype html><meta charset="utf-8"><title>간다GO</title><meta http-equiv="refresh" content="0; url=${BASE}"><link rel="canonical" href="${abs(BASE)}"><a href="${BASE}">경기북부 출장마사지 안내로 이동</a>`
-  );
+  fs.copyFileSync(path.join(OUT, ...BASE_SEGS, "404", "index.html"), path.join(OUT, "404.html"));
+  // 하위 경로 배포일 때만 루트(/) → BASE 리다이렉트. 루트 배포면 메인이 이미 /index.html.
+  if (BASE !== "/") {
+    fs.writeFileSync(
+      path.join(OUT, "index.html"),
+      `<!doctype html><meta charset="utf-8"><title>간다GO</title><meta http-equiv="refresh" content="0; url=${BASE}"><link rel="canonical" href="${abs(BASE)}"><a href="${BASE}">경기북부 출장마사지 안내로 이동</a>`
+    );
+  }
 }
 
 // =====================================================================
