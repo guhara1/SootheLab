@@ -119,6 +119,12 @@ const fabCall = `<a class="fab-call" href="${site.phoneHref}" aria-label="전화
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
 </a>`;
 
+// 히어로 밑 이미지 밴드 (메인 + 모든 지역 페이지 공통) — 페이지 셸에서 히어로 섹션 안에 주입
+const HERO_IMAGE_URL = resolveHeroImage();
+const heroImageBand = HERO_IMAGE_URL
+  ? `<figure class="hero-image"><img src="${HERO_IMAGE_URL}" alt="${esc(site.heroImageAlt || "경기북부 출장마사지 지역 안내 이미지")}" loading="lazy" decoding="async"></figure>`
+  : "";
+
 // 마사지 요금표 (메인 + 모든 지역 페이지 공통)
 function priceTable(regionName) {
   const p = site.pricing;
@@ -298,11 +304,13 @@ function breadcrumbUI(items) {
 }
 
 // ---- page shell -----------------------------------------------------
-function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true }) {
+function page({ urlPath, title, description, current, breadcrumb, image, faq, noindex, body, priority, changefreq, price = true, heroImage = true }) {
   const desc = clampDesc(description);
   const canonical = abs(urlPath);
   const ogImg = abs(image ? image.url : OG_IMAGE);
   const crumbUI = breadcrumb && breadcrumb.length > 1 ? breadcrumbUI(breadcrumb) : "";
+  // 히어로 섹션(첫 </section>) 안에 이미지 밴드 주입
+  const bodyHtml = heroImage && heroImageBand ? body.replace("</section>", heroImageBand + "\n</section>") : body;
   const html = `<!doctype html>
 <html lang="ko">
 <head>
@@ -330,7 +338,7 @@ ${fabStyleInline}
 ${header(current)}
 <div class="container">${crumbUI}</div>
 <main id="main">
-${body}
+${bodyHtml}
 ${price ? priceTable() : ""}
 </main>
 ${footer()}
@@ -354,7 +362,6 @@ const adjChips = (c) => c.adjacent.filter((s) => cityBy[s]).map((s) => [`${BASE}
 function buildMain() {
   const urlPath = BASE;
   const crumb = [{ name: "홈", url: BASE }];
-  const heroImage = resolveHeroImage();
   const cityCards = cities
     .map(
       (c) => `<article class="card">
@@ -392,7 +399,6 @@ function buildMain() {
       <a class="btn btn-ghost" href="${BASE}check/address/">예약 전 확인</a>
     </div>
   </div>
-  ${heroImage ? `<figure class="hero-image"><img src="${heroImage}" alt="${esc(site.heroImageAlt || "경기북부 출장마사지 지역 안내 이미지")}" loading="lazy" decoding="async"></figure>` : ""}
 </section>
 
 <section class="section">
@@ -963,7 +969,6 @@ function buildPolicies() {
       body,
       priority: pol.slug === "contact" ? 0.7 : 0.4,
       changefreq: "yearly",
-      price: pol.slug === "contact", // 문의 페이지에는 요금표 노출, 그 외 운영기준 페이지는 제외
     });
   });
 }
@@ -1028,6 +1033,7 @@ function buildMeta() {
     body: body404,
     noindex: true,
     price: false,
+    heroImage: false,
   });
   fs.copyFileSync(path.join(OUT, ...BASE_SEGS, "404", "index.html"), path.join(OUT, "404.html"));
   // 하위 경로 배포일 때만 루트(/) → BASE 리다이렉트. 루트 배포면 메인이 이미 /index.html.
