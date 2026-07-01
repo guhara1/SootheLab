@@ -28,6 +28,8 @@
       { "name": "120분 코스", "price": "180,000", "unit": "원", "dur": "120분", "desc": "전신 집중 프리미엄 케어", "featured": false }
     ]
   },
+  "heroImage": "/assets/images/hero.svg",
+  "heroImageAlt": "경기북부 10개 시군 방문형 관리 지역 안내 대표 이미지",
   "ogImage": "/gyeonggi-north/assets/og-default.svg",
   "organization": {
     "name": "간다GO",

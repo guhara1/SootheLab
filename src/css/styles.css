@@ -89,6 +89,18 @@ p  { margin: 0 0 var(--sp-4); }
 .hero .lede { color: rgba(255,255,255,0.86); font-size: var(--fs-md); max-width: 62ch; }
 .hero .cta-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-5); }
 
+/* ---- Hero image band (히어로 밑 이미지) ------------------------ */
+.hero-image {
+  margin: var(--sp-5) 0 0; padding: 0;
+  border-radius: var(--r-xl); overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.hero-image img {
+  width: 100%; height: auto; display: block;
+  aspect-ratio: 16 / 7; object-fit: cover;
+  background: var(--bg-subtle);
+}
+
 /* ---- Buttons -------------------------------------------------- */
 .btn {
   display: inline-flex; align-items: center; gap: var(--sp-2);

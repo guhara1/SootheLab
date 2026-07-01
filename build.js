@@ -354,6 +354,7 @@ const adjChips = (c) => c.adjacent.filter((s) => cityBy[s]).map((s) => [`${BASE}
 function buildMain() {
   const urlPath = BASE;
   const crumb = [{ name: "홈", url: BASE }];
+  const heroImage = resolveHeroImage();
   const cityCards = cities
     .map(
       (c) => `<article class="card">
@@ -391,6 +392,7 @@ function buildMain() {
       <a class="btn btn-ghost" href="${BASE}check/address/">예약 전 확인</a>
     </div>
   </div>
+  ${heroImage ? `<figure class="hero-image"><img src="${heroImage}" alt="${esc(site.heroImageAlt || "경기북부 출장마사지 지역 안내 이미지")}" loading="lazy" decoding="async"></figure>` : ""}
 </section>
 
 <section class="section">
@@ -977,6 +979,26 @@ function buildAssets() {
   fs.writeFileSync(path.join(assetDir, "logo.svg"), logo);
   const og = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#201b18"/><stop offset="1" stop-color="#2f2823"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><rect y="0" width="1200" height="6" fill="#c9a24b"/><text x="80" y="300" font-family="Pretendard,sans-serif" font-size="72" font-weight="800" fill="#fff">간다GO 경기북부</text><text x="80" y="390" font-family="Pretendard,sans-serif" font-size="44" font-weight="600" fill="#ffb37a">10개 시군 생활권 지역 안내</text><text x="80" y="470" font-family="Pretendard,sans-serif" font-size="34" fill="#c2b6aa">전화예약 0508-202-4719</text></svg>`;
   fs.writeFileSync(path.join(assetDir, "og-default.svg"), og);
+  // 업로드 이미지 폴더 복사 (assets/images/* → dist/assets/images/*)
+  const srcImg = path.join(__dirname, "assets", "images");
+  if (fs.existsSync(srcImg)) {
+    const dstImg = path.join(assetDir, "images");
+    fs.mkdirSync(dstImg, { recursive: true });
+    for (const f of fs.readdirSync(srcImg)) {
+      if (f === "README.md") continue;
+      const s = path.join(srcImg, f);
+      if (fs.statSync(s).isFile()) fs.copyFileSync(s, path.join(dstImg, f));
+    }
+  }
+}
+
+// 히어로 밑 이미지 URL: assets/images/hero.{jpg,jpeg,png,webp} 있으면 자동 우선, 없으면 site.heroImage
+function resolveHeroImage() {
+  const dir = path.join(__dirname, "assets", "images");
+  for (const n of ["hero.jpg", "hero.jpeg", "hero.png", "hero.webp"]) {
+    if (fs.existsSync(path.join(dir, n))) return ASSETS + "images/" + n;
+  }
+  return site.heroImage || null;
 }
 
 // ---- sitemap / robots / 404 ----------------------------------------

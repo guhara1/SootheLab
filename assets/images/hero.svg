@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 680" role="img" aria-label="간다GO 경기북부 안내 이미지 자리">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#241d17"/>
+      <stop offset="0.55" stop-color="#2f2823"/>
+      <stop offset="1" stop-color="#1c1712"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="80%" cy="12%" r="60%">
+      <stop offset="0" stop-color="#f26b1d" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#f26b1d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="680" fill="url(#bg)"/>
+  <rect width="1600" height="680" fill="url(#glow)"/>
+  <rect y="0" width="1600" height="6" fill="#c9a24b"/>
+  <text x="800" y="320" font-family="Pretendard, sans-serif" font-size="62" font-weight="800" fill="#ffffff" text-anchor="middle">간다GO 경기북부</text>
+  <text x="800" y="400" font-family="Pretendard, sans-serif" font-size="34" font-weight="600" fill="#ffb37a" text-anchor="middle">이미지 자리 · assets/images/hero.jpg 업로드 시 자동 교체</text>
+  <text x="800" y="470" font-family="Pretendard, sans-serif" font-size="26" fill="#c2b6aa" text-anchor="middle">권장 비율 16:7 (예: 1600×700)</text>
+</svg>
