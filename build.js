@@ -328,6 +328,9 @@ ${noindex ? '<meta name="robots" content="noindex,follow">\n' : ""}<link rel="ca
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="icon" href="${ASSETS}logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${ASSETS}styles.css?v=${CSS_VER}">
 ${fabStyleInline}

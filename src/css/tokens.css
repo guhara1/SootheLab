@@ -16,9 +16,9 @@
   --c-ink-400: #938578;
   --c-ink-300: #c2b6aa;
   --c-ink-200: #e4dcd2;
-  --c-ink-100: #f2ece4;
-  --c-ink-050: #faf6f0;
-  --c-paper:   #fffdf9;
+  --c-ink-100: #efe8dd;
+  --c-ink-050: #f7f1e8;
+  --c-paper:   #fcf8f1;
 
   /* ---- Premium accent: warm amber / signature orange ------------- */
   --c-orange-700: #b34700;
@@ -35,9 +35,18 @@
   --c-teal-500: #1f8378;
   --c-teal-100: #d7ede9;
 
-  /* ---- Premium tertiary: soft gold (고급감 강조선) ---------------- */
+  /* ---- Premium tertiary: refined gold (럭셔리 스파 강조) ---------- */
+  --c-gold-700: #9a7526;
+  --c-gold-600: #b7902f;
   --c-gold-500: #c9a24b;
+  --c-gold-400: #d8b869;
   --c-gold-300: #e6cf94;
+  --c-gold-100: #f2e6c8;
+  --c-gold-050: #faf3e2;
+
+  /* ---- Spa sage (차분한 힐링 톤) --------------------------------- */
+  --c-sage-600: #5f7a6b;
+  --c-sage-100: #e4ede7;
 
   /* ---- Feedback ------------------------------------------------- */
   --c-danger: #c0392b;
@@ -63,6 +72,8 @@
   /* ---- Typography ---------------------------------------------- */
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
     "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  /* 럭셔리 스파 감성의 명조 디스플레이 (헤딩용) */
+  --font-serif: "Noto Serif KR", "Nanum Myeongjo", "Apple SD Gothic Neo", var(--font-sans), serif;
   --fs-xs: 0.8125rem;
   --fs-sm: 0.9rem;
   --fs-base: 1rem;
@@ -84,22 +95,27 @@
   --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
   --container: 1120px;
 
-  --shadow-sm: 0 1px 2px rgba(32, 27, 24, 0.06), 0 1px 3px rgba(32, 27, 24, 0.08);
-  --shadow-md: 0 6px 18px rgba(32, 27, 24, 0.09), 0 2px 6px rgba(32, 27, 24, 0.06);
-  --shadow-lg: 0 18px 44px rgba(32, 27, 24, 0.14), 0 6px 14px rgba(32, 27, 24, 0.08);
-  --shadow-accent: 0 8px 22px rgba(242, 107, 29, 0.32);
+  --shadow-sm: 0 1px 2px rgba(40, 32, 24, 0.05), 0 2px 8px rgba(40, 32, 24, 0.05);
+  --shadow-md: 0 10px 30px rgba(40, 32, 24, 0.08), 0 3px 10px rgba(40, 32, 24, 0.05);
+  --shadow-lg: 0 30px 70px rgba(30, 22, 16, 0.18), 0 10px 24px rgba(30, 22, 16, 0.08);
+  --shadow-accent: 0 10px 26px rgba(242, 107, 29, 0.28);
+  --shadow-gold: 0 8px 30px rgba(201, 162, 75, 0.22);
 
-  /* ---- Component overlays (프리미엄 오버레이) ------------------- */
+  /* ---- Component overlays (럭셔리 스파 오버레이) ---------------- */
   --overlay-hero:
-    radial-gradient(1200px 520px at 78% -8%, rgba(242, 107, 29, 0.16), transparent 60%),
-    radial-gradient(900px 480px at 8% 108%, rgba(31, 131, 120, 0.12), transparent 62%),
-    linear-gradient(168deg, var(--c-ink-900), var(--c-ink-700) 62%, var(--c-ink-800));
+    radial-gradient(1200px 560px at 82% -10%, rgba(201, 162, 75, 0.20), transparent 58%),
+    radial-gradient(1000px 520px at 6% 112%, rgba(95, 122, 107, 0.16), transparent 60%),
+    linear-gradient(165deg, #211a14 0%, #2c2219 55%, #1c1610 100%);
   --overlay-card-sheen:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 42%);
+    linear-gradient(155deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 46%);
   --overlay-glass:
-    linear-gradient(180deg, rgba(255, 253, 249, 0.86), rgba(255, 253, 249, 0.72));
+    linear-gradient(180deg, rgba(252, 248, 241, 0.9), rgba(252, 248, 241, 0.74));
   --overlay-gold-rule:
-    linear-gradient(90deg, transparent, var(--c-gold-500) 22%, var(--c-gold-300) 50%, var(--c-gold-500) 78%, transparent);
+    linear-gradient(90deg, transparent, var(--c-gold-500) 20%, var(--c-gold-300) 50%, var(--c-gold-500) 80%, transparent);
+  --overlay-gold-hairline:
+    linear-gradient(90deg, transparent, var(--c-gold-500) 50%, transparent);
+  --overlay-image-scrim:
+    linear-gradient(180deg, rgba(20, 15, 11, 0) 40%, rgba(20, 15, 11, 0.55) 100%);
   --overlay-section-fade:
     linear-gradient(180deg, var(--bg), var(--bg-subtle));
 }
