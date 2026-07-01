@@ -207,7 +207,9 @@ function priceTable(regionName) {
 function footer() {
   const yr = "2026";
   const col = (title, items) =>
-    `<div><h4>${title}</h4><ul>${items.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>`;
+    `<nav class="footer-col" aria-label="${title}"><h4>${title}</h4><ul>${items
+      .map(([h, t]) => `<li><a href="${h}">${t}</a></li>`)
+      .join("")}</ul></nav>`;
   return `<footer class="site-footer">
   <div class="footer-cta">
     <div class="container">
@@ -221,25 +223,47 @@ function footer() {
   </div>
   <div class="container">
     <div class="footer-grid">
-      <div>
-        <a class="brand" href="${BASE}" style="color:#fff"><span class="brand-mark">G</span>간다<span class="brand-go">GO</span></a>
-        <p class="footer-brand-desc">${esc(site.defaultDescription)}</p>
-        <p class="footer-brand-desc"><strong style="color:#fff">전화 예약</strong> · <a href="${site.phoneHref}" style="color:var(--c-orange-300)">${site.phone}</a></p>
+      <div class="footer-about">
+        <a class="brand" href="${BASE}"><span class="brand-mark">G</span>간다<span class="brand-go">GO</span></a>
+        <p class="footer-brand-desc">${esc(site.about || site.defaultDescription)}</p>
+        <address class="footer-nap">
+          <span><strong>상호</strong> 간다GO</span>
+          ${site.representative ? `<span><strong>대표</strong> ${esc(site.representative)}</span>` : ""}
+          ${site.businessNumber ? `<span><strong>사업자등록번호</strong> ${esc(site.businessNumber)}</span>` : ""}
+          <span><strong>전화 예약</strong> <a href="${site.phoneHref}">${site.phone}</a></span>
+          <span><strong>상담 시간</strong> ${esc(site.hours || "")}</span>
+          <span><strong>서비스 지역</strong> ${esc(site.organization.areaServed)}</span>
+        </address>
+        <div class="footer-social">
+          <a class="footer-tg" href="${site.telegram.reserve}" target="_blank" rel="noopener nofollow">${tgIcon} 텔레그램 예약 문의</a>
+        </div>
       </div>
-      ${col("지역 안내", cities.slice(0, 6).map((c) => [`${BASE}${c.slug}/`, c.name]))}
-      ${col("바로가기", [
-        [`${BASE}life/ilsan-kintex/`, "생활권 안내"],
+      ${col("지역 안내", cities.map((c) => [`${BASE}${c.slug}/`, `${c.name} 출장마사지`]))}
+      ${col("서비스 안내", [
+        [`${BASE}life/ilsan-kintex/`, "생활권별 안내"],
         [`${BASE}station/uijeongbu-station/`, "지하철역 안내"],
         [`${BASE}outer/pocheon-songu/`, "외곽 이동 기준"],
+        [`${BASE}use/home/`, "이용 장소 안내"],
         [`${BASE}check/address/`, "예약 전 확인"],
+        [`${BASE}area/seoul-adjacent/`, "권역별 안내"],
+      ])}
+      ${col("이용 안내 · 운영", [
         [`${BASE}policy/contact/`, "문의하기"],
+        [`${BASE}policy/author/`, "작성자·검수자 안내"],
+        [`${BASE}policy/content-standard/`, "콘텐츠 작성 기준"],
+        [`${BASE}policy/privacy/`, "개인정보 처리방침"],
+        [`${BASE}policy/service-standard/`, "불법·선정적 서비스 불가 안내"],
+        ["/sitemap.xml", "사이트맵"],
       ])}
     </div>
+    <div class="footer-notice-row">
+      <p>본 사이트는 경기북부 방문형 관리 서비스의 <strong>지역 안내 정보 제공</strong>을 목적으로 하며, 불법·선정적 서비스를 제공하거나 안내하지 않습니다. 게시된 요금은 기준 요금이며 예약 시 최종 확인됩니다. 최종 업데이트 ${LAST_MOD}.</p>
+    </div>
     <div class="footer-bottom">
-      <span>상호 <strong style="color:var(--c-ink-300)">간다GO</strong> · 전화예약 ${site.phone} · © ${yr} 간다GO</span>
-      <span>
-        <a href="${BASE}policy/privacy/">개인정보 처리방침</a> ·
-        <a href="${BASE}policy/service-standard/">불법·선정적 서비스 불가 안내</a> ·
+      <span>© ${yr} 간다GO. 상호 <strong>간다GO</strong> · 전화예약 <a href="${site.phoneHref}">${site.phone}</a></span>
+      <span class="footer-legal">
+        <a href="${BASE}policy/privacy/">개인정보 처리방침</a>
+        <a href="${BASE}policy/service-standard/">서비스 이용 기준</a>
         <a href="${BASE}policy/author/">작성자·검수자</a>
       </span>
     </div>

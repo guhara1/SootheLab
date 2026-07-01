@@ -255,16 +255,31 @@ p  { margin: 0 0 var(--sp-4); }
 .footer-cta h2 { color: #fff; margin: 0 0 var(--sp-2); }
 .footer-cta p { color: var(--c-ink-300); margin: 0 0 var(--sp-5); }
 .footer-cta .cta-row { display: flex; gap: var(--sp-3); justify-content: center; flex-wrap: wrap; }
-.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--sp-6); padding: var(--sp-7) 0; }
-@media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; gap: var(--sp-5); } }
-.footer-grid h4 { color: #fff; font-size: var(--fs-sm); margin: 0 0 var(--sp-3); letter-spacing: .02em; }
+.footer-grid { display: grid; grid-template-columns: 1.7fr 1fr 1.1fr 1.2fr; gap: var(--sp-6); padding: var(--sp-7) 0; }
+@media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-about { grid-column: 1 / -1; } }
+@media (max-width: 560px) { .footer-grid { grid-template-columns: 1fr; gap: var(--sp-5); } }
+.footer-grid h4 { color: #fff; font-size: var(--fs-sm); margin: 0 0 var(--sp-3); letter-spacing: .04em; font-family: var(--font-sans); }
 .footer-grid ul { list-style: none; margin: 0; padding: 0; }
 .footer-grid li { margin-bottom: var(--sp-2); }
-.footer-grid a { color: var(--c-ink-300); font-size: var(--fs-sm); }
-.footer-grid a:hover { color: var(--c-orange-300); }
-.footer-brand-desc { color: var(--c-ink-300); font-size: var(--fs-sm); max-width: 42ch; }
-.footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: var(--sp-5) 0; font-size: var(--fs-xs); color: var(--c-ink-400); display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: space-between; }
-.footer-bottom a { color: var(--c-ink-400); }
+.footer-col a { color: var(--c-ink-300); font-size: var(--fs-sm); }
+.footer-col a:hover { color: var(--c-gold-300); }
+.site-footer .brand { color: #fff; margin-bottom: var(--sp-3); }
+.footer-brand-desc { color: var(--c-ink-300); font-size: var(--fs-sm); max-width: 46ch; line-height: 1.7; }
+/* NAP / 사업자 정보 (E-E-A-T 신뢰 신호) */
+.footer-nap { font-style: normal; display: grid; gap: 6px; margin: var(--sp-4) 0; font-size: var(--fs-sm); color: var(--c-ink-300); }
+.footer-nap strong { color: #fff; font-weight: 600; display: inline-block; min-width: 92px; }
+.footer-nap a { color: var(--c-gold-300); }
+.footer-social { margin-top: var(--sp-4); }
+.footer-tg { display: inline-flex; align-items: center; gap: 8px; color: var(--c-orange-300); font-size: var(--fs-sm); font-weight: 700; }
+.footer-tg:hover { color: var(--c-orange-400); }
+.footer-notice-row { border-top: 1px solid rgba(255,255,255,0.08); padding: var(--sp-5) 0; }
+.footer-notice-row p { color: var(--c-ink-400); font-size: var(--fs-xs); line-height: 1.7; margin: 0; max-width: 100ch; }
+.footer-notice-row strong { color: var(--c-ink-300); }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: var(--sp-5) 0; font-size: var(--fs-xs); color: var(--c-ink-400); display: flex; flex-wrap: wrap; gap: var(--sp-4); justify-content: space-between; align-items: center; }
+.footer-bottom a { color: var(--c-ink-300); }
+.footer-bottom strong { color: var(--c-ink-200); }
+.footer-legal { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
+.footer-legal a:hover { color: var(--c-gold-300); }
 
 /* ---- Eyebrow labels & centered heads -------------------------- */
 .eyebrow {
